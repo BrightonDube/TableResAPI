@@ -10,7 +10,7 @@ const options = {
       description: 'API documentation for the Restaurant Reservation system',
     },
   },
-  apis: [path.join(__dirname, '../swagger/swagger.json')], 
+  apis: [path.join(__dirname, '../routes/*.js')], 
 };
 
 const swaggerSpec = swaggerJsdoc(options);

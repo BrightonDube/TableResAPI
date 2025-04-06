@@ -62,18 +62,18 @@
             "tableNumber": {
               "type": "string",
               "description": "Unique identifier for the table (e.g., 'T1', '102')",
-              "example": "T1"
+              "example": "T101"
             },
             "capacity": {
               "type": "integer",
               "format": "int32",
               "description": "Maximum capacity of the table",
-              "example": 4
+              "example": 6
             },
             "location": {
               "type": "string",
               "description": "Location of the table within the restaurant (optional)",
-              "example": "Indoor, near window"
+              "example": "Outdoor Patio"
             },
             "isAvailable": {
               "type": "boolean",
@@ -86,9 +86,9 @@
             "capacity"
           ],
           "example": {
-            "tableNumber": "T1",
-            "capacity": 4,
-            "location": "Indoor",
+            "tableNumber": "T101",
+            "capacity": 6,
+            "location": "Outdoor Patio",
             "isAvailable": true
           }
         },
@@ -103,29 +103,29 @@
             "tableId": {
               "type": "string",
               "description": "ID of the table reserved (reference to Table collection)",
-              "example": "64d8c2e4f7b3e2a0c5d4e6f8"
+              "example": "65a9b2c3d4e5f6a7b8c9d0e1"
             },
             "customerName": {
               "type": "string",
               "description": "Name of the customer making the reservation",
-              "example": "John Doe"
+              "example": "Jane Smith"
             },
             "customerPhone": {
               "type": "string",
               "description": "Phone number of the customer (optional)",
-              "example": "555-123-4567"
+              "example": "123-456-7890"
             },
             "reservationTime": {
               "type": "string",
               "format": "date-time",
               "description": "Date and time of the reservation (ISO 8601 format)",
-              "example": "2024-08-10T19:00:00Z"
+              "example": "2024-08-15T13:30:00Z"
             },
             "partySize": {
               "type": "integer",
               "format": "int32",
               "description": "Number of people in the party",
-              "example": 2
+              "example": 4
             },
             "status": {
               "type": "string",
@@ -137,7 +137,7 @@
             "notes": {
               "type": "string",
               "description": "Additional notes for the reservation (optional)",
-              "example": "Birthday celebration"
+              "example": "Wheelchair access needed"
             }
           },
           "required": [
@@ -147,12 +147,12 @@
             "partySize"
           ],
           "example": {
-            "tableId": "64d8c2e4f7b3e2a0c5d4e6f8",
-            "customerName": "John Doe",
-            "reservationTime": "2024-08-10T19:00:00Z",
-            "partySize": 2,
-            "status": "Pending",
-            "notes": "Vegetarian guest"
+            "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+            "customerName": "Jane Smith",
+            "reservationTime": "2024-08-15T13:30:00Z",
+            "partySize": 4,
+            "status": "Confirmed",
+            "notes": "Wheelchair access needed"
           }
         },
         "RestaurantInfo": {
@@ -166,39 +166,39 @@
             "name": {
               "type": "string",
               "description": "Name of the restaurant",
-              "example": "The Cozy Bistro"
+              "example": "Gourmet Gardens"
             },
             "address": {
               "type": "string",
               "description": "Restaurant address",
-              "example": "123 Main Street, Cityville"
+              "example": "456 Elm Street, Anytown"
             },
             "phoneNumber": {
               "type": "string",
               "description": "Restaurant phone number",
-              "example": "555-555-5555"
+              "example": "555-123-0000"
             },
             "openingHours": {
               "type": "string",
               "description": "Restaurant opening hours",
-              "example": "Mon-Sun: 11:00 AM - 10:00 PM"
+              "example": "Tue-Sun: 12:00 PM - 9:00 PM"
             },
             "website": {
               "type": "string",
               "format": "url",
               "description": "Restaurant website URL (optional)",
-              "example": "https://www.cozybistro.com"
+              "example": "https://www.gourmetgardens.com"
             }
           },
           "required": [
             "name"
           ],
           "example": {
-            "name": "The Cozy Bistro",
-            "address": "123 Main Street, Cityville",
-            "phoneNumber": "555-555-5555",
-            "openingHours": "Mon-Sun: 11:00 AM - 10:00 PM",
-            "website": "https://www.cozybistro.com"
+            "name": "Gourmet Gardens",
+            "address": "456 Elm Street, Anytown",
+            "phoneNumber": "555-123-0000",
+            "openingHours": "Tue-Sun: 12:00 PM - 9:00 PM",
+            "website": "https://www.gourmetgardens.com"
           }
         },
         "User": {
@@ -212,18 +212,18 @@
             "googleId": {
               "type": "string",
               "description": "Google ID of the user",
-              "example": "123456789012345678901"
+              "example": "987654321098765432109"
             },
             "email": {
               "type": "string",
               "format": "email",
               "description": "User's email address",
-              "example": "user@example.com"
+              "example": "admin@restaurant.com"
             },
             "name": {
               "type": "string",
               "description": "User's full name",
-              "example": "John Doe"
+              "example": "Restaurant Admin"
             }
           },
           "required": [
@@ -232,9 +232,9 @@
             "name"
           ],
           "example": {
-            "googleId": "123456789012345678901",
-            "email": "user@example.com",
-            "name": "John Doe"
+            "googleId": "987654321098765432109",
+            "email": "admin@restaurant.com",
+            "name": "Restaurant Admin"
           }
         },
         "ReservationStatus": {
@@ -248,20 +248,20 @@
             "name": {
               "type": "string",
               "description": "Name of the status (e.g., 'Pending', 'Confirmed')",
-              "example": "Confirmed"
+              "example": "Pending"
             },
             "description": {
               "type": "string",
               "description": "Description of the status (optional)",
-              "example": "Reservation has been confirmed by staff"
+              "example": "Awaiting confirmation from restaurant"
             }
           },
           "required": [
             "name"
           ],
           "example": {
-            "name": "Confirmed",
-            "description": "Reservation has been confirmed by staff"
+            "name": "Pending",
+            "description": "Awaiting confirmation from restaurant"
           }
         }
       }
@@ -280,9 +280,9 @@
                   "$ref": "#/components/schemas/Table"
                 },
                 "example": {
-                  "tableNumber": "T10",
-                  "capacity": 2,
-                  "location": "Outdoor Patio"
+                  "tableNumber": "T102",
+                  "capacity": 4,
+                  "location": "Indoor, Back Room"
                 }
               }
             }
@@ -296,10 +296,10 @@
                     "$ref": "#/components/schemas/Table"
                   },
                   "example": {
-                    "_id": "64d8c2e4f7b3e2a0c5d4e6f9",
-                    "tableNumber": "T10",
-                    "capacity": 2,
-                    "location": "Outdoor Patio",
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e2",
+                    "tableNumber": "T102",
+                    "capacity": 4,
+                    "location": "Indoor, Back Room",
                     "isAvailable": true
                   }
                 }
@@ -313,7 +313,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Table number is required."
+                    "message": "Table number must be unique."
                   }
                 }
               }
@@ -363,17 +363,17 @@
                   },
                   "example": [
                     {
-                      "_id": "64d8c2e4f7b3e2a0c5d4e6f8",
-                      "tableNumber": "T1",
-                      "capacity": 4,
-                      "location": "Indoor",
+                      "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
+                      "tableNumber": "T101",
+                      "capacity": 6,
+                      "location": "Outdoor Patio",
                       "isAvailable": true
                     },
                     {
-                      "_id": "64d8c2e4f7b3e2a0c5d4e6f9",
-                      "tableNumber": "T2",
-                      "capacity": 2,
-                      "location": "Outdoor Patio",
+                      "_id": "65a9b2c3d4e5f6a7b8c9d0e2",
+                      "tableNumber": "T102",
+                      "capacity": 4,
+                      "location": "Indoor, Back Room",
                       "isAvailable": false
                     }
                   ]
@@ -417,7 +417,8 @@
             "required": true,
             "description": "ID of the table to perform operations on",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "65a9b2c3d4e5f6a7b8c9d0e1"  // Example tableId
             }
           }
         ],
@@ -434,10 +435,10 @@
                     "$ref": "#/components/schemas/Table"
                   },
                   "example": {
-                    "_id": "64d8c2e4f7b3e2a0c5d4e6f8",
-                    "tableNumber": "T1",
-                    "capacity": 4,
-                    "location": "Indoor",
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
+                    "tableNumber": "T101",
+                    "capacity": 6,
+                    "location": "Outdoor Patio",
                     "isAvailable": true
                   }
                 }
@@ -488,6 +489,18 @@
           "tags": ["Tables"],
           "summary": "Update an existing table by ID",
           "security": [{"cookieAuth": []}],
+          "parameters": [
+            {
+              "name": "tableId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the table to update",
+              "schema": {
+                "type": "string",
+                "example": "65a9b2c3d4e5f6a7b8c9d0e1" // Example tableId
+              }
+            }
+          ],
           "requestBody": {
             "required": true,
             "content": {
@@ -496,9 +509,9 @@
                   "$ref": "#/components/schemas/Table"
                 },
                 "example": {
-                  "tableNumber": "T1-Updated",
-                  "capacity": 4,
-                  "location": "Indoor, near window",
+                  "tableNumber": "T101-Updated",
+                  "capacity": 8,
+                  "location": "Outdoor Garden",
                   "isAvailable": false
                 }
               }
@@ -513,10 +526,10 @@
                     "$ref": "#/components/schemas/Table"
                   },
                   "example": {
-                    "_id": "64d8c2e4f7b3e2a0c5d4e6f8",
-                    "tableNumber": "T1-Updated",
-                    "capacity": 4,
-                    "location": "Indoor, near window",
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
+                    "tableNumber": "T101-Updated",
+                    "capacity": 8,
+                    "location": "Outdoor Garden",
                     "isAvailable": false
                   }
                 }
@@ -530,7 +543,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Capacity must be a number."
+                    "message": "Invalid location provided."
                   }
                 }
               }
@@ -556,7 +569,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Table not found."
+                    "message": "Table with ID 65a9b2c3d4e5f6a7b8c9d0e1 not found."
                   }
                 }
               }
@@ -580,6 +593,18 @@
           "tags": ["Tables"],
           "summary": "Delete a table by ID",
           "security": [{"cookieAuth": []}],
+          "parameters": [
+            {
+              "name": "tableId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the table to delete",
+              "schema": {
+                "type": "string",
+                "example": "65a9b2c3d4e5f6a7b8c9d0e1" // Example tableId
+              }
+            }
+          ],
           "responses": {
             "204": {
               "description": "Table deleted successfully"
@@ -605,7 +630,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Table not found."
+                    "message": "Table with ID 65a9b2c3d4e5f6a7b8c9d0e1 not found."
                   }
                 }
               }
@@ -639,11 +664,12 @@
                   "$ref": "#/components/schemas/Reservation"
                 },
                 "example": {
-                  "tableId": "64d8c2e4f7b3e2a0c5d4e6f8",
-                  "customerName": "Alice Smith",
-                  "reservationTime": "2024-08-11T20:30:00Z",
-                  "partySize": 3,
-                  "notes": "High chair needed"
+                  "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+                  "customerName": "Peter Jones",
+                  "reservationTime": "2024-08-18T18:00:00Z",
+                  "partySize": 2,
+                  "customerPhone": "987-654-3210",
+                  "notes": "Anniversary dinner"
                 }
               }
             }
@@ -657,13 +683,14 @@
                     "$ref": "#/components/schemas/Reservation"
                   },
                   "example": {
-                    "_id": "64d8c2e4f7b3e2a0c5d4e6fa",
-                    "tableId": "64d8c2e4f7b3e2a0c5d4e6f8",
-                    "customerName": "Alice Smith",
-                    "reservationTime": "2024-08-11T20:30:00Z",
-                    "partySize": 3,
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
+                    "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+                    "customerName": "Peter Jones",
+                    "reservationTime": "2024-08-18T18:00:00Z",
+                    "partySize": 2,
                     "status": "Pending",
-                    "notes": "High chair needed"
+                    "customerPhone": "987-654-3210",
+                    "notes": "Anniversary dinner"
                   }
                 }
               }
@@ -676,7 +703,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Reservation time must be a valid date."
+                    "message": "Invalid tableId provided."
                   }
                 }
               }
@@ -726,21 +753,23 @@
                   },
                   "example": [
                     {
-                      "_id": "64d8c2e4f7b3e2a0c5d4e6fa",
-                      "tableId": "64d8c2e4f7b3e2a0c5d4e6f8",
-                      "customerName": "Alice Smith",
-                      "reservationTime": "2024-08-11T20:30:00Z",
-                      "partySize": 3,
+                      "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
+                      "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+                      "customerName": "Peter Jones",
+                      "reservationTime": "2024-08-18T18:00:00Z",
+                      "partySize": 2,
                       "status": "Pending",
-                      "notes": "High chair needed"
+                      "customerPhone": "987-654-3210",
+                      "notes": "Anniversary dinner"
                     },
                     {
-                      "_id": "64d8c2e4f7b3e2a0c5d4e6fb",
-                      "tableId": "64d8c2e4f7b3e2a0c5d4e6f9",
-                      "customerName": "Bob Johnson",
-                      "reservationTime": "2024-08-12T12:00:00Z",
-                      "partySize": 2,
+                      "_id": "65a9b2c3d4e5f6a7b8c9d0e4",
+                      "tableId": "65a9b2c3d4e5f6a7b8c9d0e2",
+                      "customerName": "Mary Brown",
+                      "reservationTime": "2024-08-19T19:30:00Z",
+                      "partySize": 6,
                       "status": "Confirmed",
+                      "customerPhone": "555-999-1111",
                       "notes": null
                     }
                   ]
@@ -784,7 +813,8 @@
             "required": true,
             "description": "ID of the reservation to perform operations on",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "65a9b2c3d4e5f6a7b8c9d0e3" // Example reservationId
             }
           }
         ],
@@ -801,13 +831,14 @@
                     "$ref": "#/components/schemas/Reservation"
                   },
                   "example": {
-                    "_id": "64d8c2e4f7b3e2a0c5d4e6fa",
-                    "tableId": "64d8c2e4f7b3e2a0c5d4e6f8",
-                    "customerName": "Alice Smith",
-                    "reservationTime": "2024-08-11T20:30:00Z",
-                    "partySize": 3,
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
+                    "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+                    "customerName": "Peter Jones",
+                    "reservationTime": "2024-08-18T18:00:00Z",
+                    "partySize": 2,
                     "status": "Pending",
-                    "notes": "High chair needed"
+                    "customerPhone": "987-654-3210",
+                    "notes": "Anniversary dinner"
                   }
                 }
               }
@@ -857,6 +888,18 @@
           "tags": ["Reservations"],
           "summary": "Update an existing reservation by ID",
           "security": [{"cookieAuth": []}],
+          "parameters": [
+            {
+              "name": "reservationId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the reservation to update",
+              "schema": {
+                "type": "string",
+                "example": "65a9b2c3d4e5f6a7b8c9d0e3" // Example reservationId
+              }
+            }
+          ],
           "requestBody": {
             "required": true,
             "content": {
@@ -865,9 +908,10 @@
                   "$ref": "#/components/schemas/Reservation"
                 },
                 "example": {
-                  "customerName": "Alice Smith Updated",
-                  "partySize": 4,
-                  "status": "Confirmed"
+                  "customerName": "Peter J. Jones",
+                  "partySize": 3,
+                  "status": "Confirmed",
+                  "notes": "Special request: window seat"
                 }
               }
             }
@@ -881,13 +925,14 @@
                     "$ref": "#/components/schemas/Reservation"
                   },
                   "example": {
-                    "_id": "64d8c2e4f7b3e2a0c5d4e6fa",
-                    "tableId": "64d8c2e4f7b3e2a0c5d4e6f8",
-                    "customerName": "Alice Smith Updated",
-                    "reservationTime": "2024-08-11T20:30:00Z",
-                    "partySize": 4,
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
+                    "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+                    "customerName": "Peter J. Jones",
+                    "reservationTime": "2024-08-18T18:00:00Z",
+                    "partySize": 3,
                     "status": "Confirmed",
-                    "notes": "High chair needed"
+                    "customerPhone": "987-654-3210",
+                    "notes": "Special request: window seat"
                   }
                 }
               }
@@ -900,7 +945,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Party size must be a number."
+                    "message": "Invalid status value."
                   }
                 }
               }
@@ -926,7 +971,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Reservation not found."
+                    "message": "Reservation with ID 65a9b2c3d4e5f6a7b8c9d0e3 not found."
                   }
                 }
               }
@@ -950,6 +995,18 @@
           "tags": ["Reservations"],
           "summary": "Delete a reservation by ID",
           "security": [{"cookieAuth": []}],
+          "parameters": [
+            {
+              "name": "reservationId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the reservation to delete",
+              "schema": {
+                "type": "string",
+                "example": "65a9b2c3d4e5f6a7b8c9d0e3" // Example reservationId
+              }
+            }
+          ],
           "responses": {
             "204": {
               "description": "Reservation deleted successfully"
@@ -975,7 +1032,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Reservation not found."
+                    "message": "Reservation with ID 65a9b2c3d4e5f6a7b8c9d0e3 not found."
                   }
                 }
               }
@@ -1009,12 +1066,12 @@
                     "$ref": "#/components/schemas/RestaurantInfo"
                   },
                   "example": {
-                    "_id": "64d8c2e4f7b3e2a0c5d4e6fc",
-                    "name": "The Cozy Bistro",
-                    "address": "123 Main Street, Cityville",
-                    "phoneNumber": "555-555-5555",
-                    "openingHours": "Mon-Sun: 11:00 AM - 10:00 PM",
-                    "website": "https://www.cozybistro.com"
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e5",
+                    "name": "Gourmet Gardens",
+                    "address": "456 Elm Street, Anytown",
+                    "phoneNumber": "555-123-0000",
+                    "openingHours": "Tue-Sun: 12:00 PM - 9:00 PM",
+                    "website": "https://www.gourmetgardens.com"
                   }
                 }
               }
@@ -1046,9 +1103,10 @@
                   "$ref": "#/components/schemas/RestaurantInfo"
                 },
                 "example": {
-                  "name": "The Updated Cozy Bistro",
-                  "address": "456 Oak Avenue, Cityville",
-                  "openingHours": "Mon-Sat: 10:00 AM - 9:00 PM"
+                  "name": "Gourmet Gardens & Patio",
+                  "address": "456 Elm Street, Anytown, Updated Address",
+                  "openingHours": "Tue-Sun: 12:00 PM - 10:00 PM",
+                  "website": "https://www.gourmetgardenspatio.com"
                 }
               }
             }
@@ -1062,12 +1120,12 @@
                     "$ref": "#/components/schemas/RestaurantInfo"
                   },
                   "example": {
-                    "_id": "64d8c2e4f7b3e2a0c5d4e6fc",
-                    "name": "The Updated Cozy Bistro",
-                    "address": "456 Oak Avenue, Cityville",
-                    "phoneNumber": "555-555-5555",
-                    "openingHours": "Mon-Sat: 10:00 AM - 9:00 PM",
-                    "website": "https://www.updatedcozybistro.com"
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e5",
+                    "name": "Gourmet Gardens & Patio",
+                    "address": "456 Elm Street, Anytown, Updated Address",
+                    "phoneNumber": "555-123-0000",
+                    "openingHours": "Tue-Sun: 12:00 PM - 10:00 PM",
+                    "website": "https://www.gourmetgardenspatio.com"
                   }
                 }
               }
@@ -1080,7 +1138,7 @@
                     "$ref": "#/components/schemas/ErrorResponse"
                   },
                   "example": {
-                    "message": "Restaurant name is required."
+                    "message": "Phone number format is invalid."
                   }
                 }
               }
