@@ -4,6 +4,8 @@ const path = require('path');
 const connectDB = require('./config/db');
 
 const app = express();
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger.config');
 const port = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -18,6 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.send('Restaurant Reservation API is running!');
 });
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
