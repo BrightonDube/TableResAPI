@@ -1,8 +1,7 @@
-<h1>Welcome to the Restaurant Reservation System!</h1>
-
+<h1 class="mb-4">Welcome to the Restaurant Reservation System!</h1>
 <% if (user) { %>
-  <p>You are logged in as <%= user.name %> (<%= user.email %>).</p>
-  <p>Use the navigation above to explore the app.</p>
+  <p class="lead">You are logged in as <strong><%= user.name %></strong> (<%= user.email %>).</p>
+  <p>Please use the navigation above to explore the app.</p>
 <% } else { %>
-  <p>Please <a href="/auth/google">login</a> to manage tables and reservations.</p>
+  <p class="lead">Please <a href="/auth/google">login</a> to manage tables and reservations.</p>
 <% } %>

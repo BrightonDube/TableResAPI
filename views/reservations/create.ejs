@@ -1,28 +1,20 @@
-<h1>Create New Reservation</h1>
-<form action="/reservations" method="POST">
-  <div>
-    <label for="tableId">Table ID:</label>
-    <input type="text" id="tableId" name="tableId" required>
-  </div>
-  <div>
-    <label for="customerName">Customer Name:</label>
-    <input type="text" id="customerName" name="customerName" required>
-  </div>
-  <div>
-    <label for="customerPhone">Customer Phone:</label>
-    <input type="text" id="customerPhone" name="customerPhone">
-  </div>
-  <div>
-    <label for="reservationTime">Reservation Time:</label>
-    <input type="datetime-local" id="reservationTime" name="reservationTime" required>
-  </div>
-  <div>
-    <label for="partySize">Party Size:</label>
-    <input type="number" id="partySize" name="partySize" min="1" required>
-  </div>
-  <div>
-    <label for="notes">Notes:</label>
-    <textarea id="notes" name="notes"></textarea>
-  </div>
-  <button type="submit">Create Reservation</button>
-</form>
+<h1 class="mb-4">Create New Table</h1>
+    <form action="/tables" method="POST">
+      <div class="form-group mb-3">
+        <label for="tableNumber">Table Number</label>
+        <input type="text" class="form-control" id="tableNumber" name="tableNumber" required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="capacity">Capacity</label>
+        <input type="number" class="form-control" id="capacity" name="capacity" min="1" required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="location">Location</label>
+        <input type="text" class="form-control" id="location" name="location">
+      </div>
+      <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="isAvailable" name="isAvailable" value="true" checked>
+        <label class="form-check-label" for="isAvailable">Is Available</label>
+      </div>
+      <button type="submit" class="btn btn-success">Create Table</button>
+    </form>
