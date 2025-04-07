@@ -7,6 +7,7 @@ const passport = require('./config/passport');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 const errorHandler = require('./middleware/errorHandler');
+const MongoStore = require('connect-mongo');
 
 // Models
 const Table = require('./models/Table');
@@ -41,16 +42,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    },
-  })
-);
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      store: MongoStore.create({ 
+        mongoUrl: process.env.MONGO_URI 
+      }),
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24 // 1 day
+      }
+    })
+  );
 
 app.use(passport.initialize());
 app.use(passport.session());

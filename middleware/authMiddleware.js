@@ -1,3 +1,4 @@
+// middleware/authMiddleware.js
 const verifyToken = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next(); 
