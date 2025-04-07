@@ -7,8 +7,7 @@ const passport = require('./config/passport');
 const session = require('express-session'); 
 
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./config/swagger.config');
-
+const swaggerDocument = require('./swagger/swagger.json');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -38,13 +37,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Mount routes
-app.use('/tables', tableRoutes); // Mount table routes
+app.use('/tables', tableRoutes);
 
 // Test Route
 app.get('/', (req, res) => {
   res.send('Restaurant Reservation API is running!');
 });
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

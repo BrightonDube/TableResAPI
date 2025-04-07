@@ -278,11 +278,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Table"
-                },
-                "example": {
-                  "tableNumber": "T102",
-                  "capacity": 4,
-                  "location": "Indoor, Back Room"
                 }
               }
             }
@@ -418,7 +413,7 @@
             "description": "ID of the table to perform operations on",
             "schema": {
               "type": "string",
-              "example": "65a9b2c3d4e5f6a7b8c9d0e1"  // Example tableId
+              "example": "65a9b2c3d4e5f6a7b8c9d0e1"
             }
           }
         ],
@@ -497,7 +492,7 @@
               "description": "ID of the table to update",
               "schema": {
                 "type": "string",
-                "example": "65a9b2c3d4e5f6a7b8c9d0e1" // Example tableId
+                "example": "65a9b2c3d4e5f6a7b8c9d0e1"
               }
             }
           ],
@@ -507,12 +502,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Table"
-                },
-                "example": {
-                  "tableNumber": "T101-Updated",
-                  "capacity": 8,
-                  "location": "Outdoor Garden",
-                  "isAvailable": false
                 }
               }
             }
@@ -601,7 +590,7 @@
               "description": "ID of the table to delete",
               "schema": {
                 "type": "string",
-                "example": "65a9b2c3d4e5f6a7b8c9d0e1" // Example tableId
+                "example": "65a9b2c3d4e5f6a7b8c9d0e1"
               }
             }
           ],
@@ -662,14 +651,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Reservation"
-                },
-                "example": {
-                  "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
-                  "customerName": "Peter Jones",
-                  "reservationTime": "2024-08-18T18:00:00Z",
-                  "partySize": 2,
-                  "customerPhone": "987-654-3210",
-                  "notes": "Anniversary dinner"
                 }
               }
             }
@@ -814,7 +795,7 @@
             "description": "ID of the reservation to perform operations on",
             "schema": {
               "type": "string",
-              "example": "65a9b2c3d4e5f6a7b8c9d0e3" // Example reservationId
+              "example": "65a9b2c3d4e5f6a7b8c9d0e3"
             }
           }
         ],
@@ -896,7 +877,7 @@
               "description": "ID of the reservation to update",
               "schema": {
                 "type": "string",
-                "example": "65a9b2c3d4e5f6a7b8c9d0e3" // Example reservationId
+                "example": "65a9b2c3d4e5f6a7b8c9d0e3"
               }
             }
           ],
@@ -906,12 +887,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Reservation"
-                },
-                "example": {
-                  "customerName": "Peter J. Jones",
-                  "partySize": 3,
-                  "status": "Confirmed",
-                  "notes": "Special request: window seat"
                 }
               }
             }
@@ -1003,7 +978,7 @@
               "description": "ID of the reservation to delete",
               "schema": {
                 "type": "string",
-                "example": "65a9b2c3d4e5f6a7b8c9d0e3" // Example reservationId
+                "example": "65a9b2c3d4e5f6a7b8c9d0e3"
               }
             }
           ],
@@ -1101,12 +1076,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RestaurantInfo"
-                },
-                "example": {
-                  "name": "Gourmet Gardens & Patio",
-                  "address": "456 Elm Street, Anytown, Updated Address",
-                  "openingHours": "Tue-Sun: 12:00 PM - 10:00 PM",
-                  "website": "https://www.gourmetgardenspatio.com"
                 }
               }
             }

@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const tableController = require('../controllers/tableController');
 const { validateTableInput } = require('../middleware/dataValidationMiddleware');
-const { verifyToken } = require('../middleware/authMiddleware'); 
+const { verifyToken } = require('../middleware/authMiddleware');
 
 /**
  * @swagger
@@ -14,12 +14,64 @@ const { verifyToken } = require('../middleware/authMiddleware');
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     ErrorResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: Error message describing the issue.
+ *       example:
+ *         message: "Validation error: Customer name is required."
+ *     Table:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: Unique ID of the table (MongoDB ObjectId)
+ *           readOnly: true
+ *         tableNumber:
+ *           type: string
+ *           description: Unique identifier for the table (e.g., 'T1', '102')
+ *           example: "T10"
+ *         capacity:
+ *           type: integer
+ *           format: int32
+ *           description: Maximum capacity of the table
+ *           example: 4
+ *         location:
+ *           type: string
+ *           description: Location of the table within the restaurant (optional)
+ *           example: "Indoor, near window"
+ *         isAvailable:
+ *           type: boolean
+ *           description: Indicates if the table is currently available for reservations (optional, default: true)
+ *           example: true
+ *       required:
+ *         - tableNumber
+ *         - capacity
+ *       example: # Example for the entire Table schema
+ *         tableNumber: "T10"
+ *         capacity: 4
+ *         location: "Indoor"
+ *         isAvailable: true
+ *   securitySchemes: # Define your security scheme here
+ *     cookieAuth:
+ *       type: apiKey
+ *       in: cookie
+ *       name: connect.sid
+ *       description: "Session cookie for Google Authentication. After successful Google login, a `connect.sid` cookie is set, which is used for subsequent authenticated requests."
+ */
+
+/**
+ * @swagger
  * /tables:
  *   post:
  *     summary: Create a new table
  *     tags: [Tables]
  *     security:
- *       - cookieAuth: []
+ *       - cookieAuth: [] # Use the defined security scheme
  *     requestBody:
  *       required: true
  *       content:
@@ -61,7 +113,7 @@ router.post('/', verifyToken, validateTableInput, tableController.createTable);
  *     summary: Get all tables
  *     tags: [Tables]
  *     security:
- *       - cookieAuth: []
+ *       - cookieAuth: [] # Use the defined security scheme
  *     responses:
  *       200:
  *         description: Successful retrieval of tables
@@ -93,7 +145,7 @@ router.get('/', verifyToken, tableController.getAllTables);
  *     summary: Get a specific table by ID
  *     tags: [Tables]
  *     security:
- *       - cookieAuth: []
+ *       - cookieAuth: [] # Use the defined security scheme
  *     parameters:
  *       - in: path
  *         name: tableId
@@ -136,7 +188,7 @@ router.get('/:tableId', verifyToken, tableController.getTableById);
  *     summary: Update an existing table by ID
  *     tags: [Tables]
  *     security:
- *       - cookieAuth: []
+ *       - cookieAuth: [] # Use the defined security scheme
  *     parameters:
  *       - in: path
  *         name: tableId
@@ -191,7 +243,7 @@ router.put('/:tableId', verifyToken, validateTableInput, tableController.updateT
  *     summary: Delete a table by ID
  *     tags: [Tables]
  *     security:
- *       - cookieAuth: []
+ *       - cookieAuth: [] # Use the defined security scheme
  *     parameters:
  *       - in: path
  *         name: tableId
