@@ -135,3 +135,30 @@ exports.updateReservation = async (req, res) => {
         );
     }
 };
+// Delete a reservation
+exports.deleteReservation = async (req, res) => {
+    try {
+        const reservationId = toObjectId(req.params.reservationId);
+        if (!reservationId) {
+            return res.status(400).json(
+                formatResponse(false, "Invalid reservation ID format")
+            );
+        }
+
+        const deletedReservation = await Reservation.findByIdAndDelete(reservationId);
+
+        if (!deletedReservation) {
+            return res.status(404).json(
+                formatResponse(false, "Reservation not found")
+            );
+        }
+
+        res.json(
+            formatResponse(true, "Reservation deleted successfully", deletedReservation)
+        );
+    } catch (err) {
+        res.status(500).json(
+            formatResponse(false, err.message)
+        );
+    }
+};

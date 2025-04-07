@@ -1,8 +1,8 @@
-<%- include('layouts/layout', { title: 'Dashboard', user: user, body: `<h1>Dashboard</h1>
+<h1>Dashboard</h1>
 <p>Welcome to your dashboard, <%= user.name %>!</p>
+
 <h2>Quick Actions</h2>
 <ul>
-    <li><a href="/tables/create">Create New Table</a></li>
-    <li><a href="/reservations/create">Create New Reservation</a></li>
+  <li><a href="/tables/create">Create New Table</a></li>
+  <li><a href="/reservations/create">Create New Reservation</a></li>
 </ul>
-` }) %>

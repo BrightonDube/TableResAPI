@@ -1,7 +1,8 @@
-<%- include('layouts/layout', { title: 'Home', user: user, body: `<h1>Welcome to the Restaurant Reservation System!</h1>
+<h1>Welcome to the Restaurant Reservation System!</h1>
+
 <% if (user) { %>
-    <p>You are logged in as <%= user.name %> (<%= user.email %>). Please use the navigation above to explore the app.</p>
+  <p>You are logged in as <%= user.name %> (<%= user.email %>).</p>
+  <p>Use the navigation above to explore the app.</p>
 <% } else { %>
-    <p>Please <a href="/auth/google">login</a> to manage tables and reservations.</p>
+  <p>Please <a href="/auth/google">login</a> to manage tables and reservations.</p>
 <% } %>
-` }) %>
