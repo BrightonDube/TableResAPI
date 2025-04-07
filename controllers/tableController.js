@@ -1,19 +1,52 @@
+// controllers/tableController.js
 const Table = require('../models/Table');
+// Import the utility functions
+const { 
+  formatTable, 
+  toObjectId,
+  buildQueryFilters,
+  getPaginationOptions,
+  formatResponse
+} = require('../utils/dataTransformUtils');
 
 const createTable = async (req, res, next) => {
     try {
-        const newTable = new Table(req.body);
+        // Format the table data before saving
+        const formattedData = formatTable(req.body);
+        const newTable = new Table(formattedData);
         const savedTable = await newTable.save();
-        res.status(201).json(savedTable);
+        
+        res.status(201).json(
+            formatResponse(true, "Table created successfully", savedTable)
+        );
     } catch (error) {
-        next(error); // Pass error to error handling middleware
+        next(error);
     }
 };
 
 const getAllTables = async (req, res, next) => {
     try {
-        const tables = await Table.find();
-        res.status(200).json(tables);
+        // Use pagination and filtering utilities
+        const filters = buildQueryFilters(req.query);
+        const { page, limit, skip, sort } = getPaginationOptions(req.query);
+        
+        const tables = await Table.find(filters)
+            .sort(sort)
+            .skip(skip)
+            .limit(limit);
+            
+        const total = await Table.countDocuments(filters);
+        
+        const meta = {
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit)
+        };
+        
+        res.status(200).json(
+            formatResponse(true, "Tables retrieved successfully", tables, meta)
+        );
     } catch (error) {
         next(error);
     }
@@ -21,11 +54,23 @@ const getAllTables = async (req, res, next) => {
 
 const getTableById = async (req, res, next) => {
     try {
-        const table = await Table.findById(req.params.tableId);
-        if (!table) {
-            return res.status(404).json({ message: 'Table not found' });
+        const tableId = toObjectId(req.params.tableId);
+        if (!tableId) {
+            return res.status(400).json(
+                formatResponse(false, "Invalid table ID format")
+            );
         }
-        res.status(200).json(table);
+        
+        const table = await Table.findById(tableId);
+        if (!table) {
+            return res.status(404).json(
+                formatResponse(false, "Table not found")
+            );
+        }
+        
+        res.status(200).json(
+            formatResponse(true, "Table retrieved successfully", table)
+        );
     } catch (error) {
         next(error);
     }
@@ -33,14 +78,36 @@ const getTableById = async (req, res, next) => {
 
 const updateTable = async (req, res, next) => {
     try {
-        const updatedTable = await Table.findByIdAndUpdate(req.params.tableId, req.body, { new: true, runValidators: true });
-        if (!updatedTable) {
-            return res.status(404).json({ message: 'Table not found' });
+        const tableId = toObjectId(req.params.tableId);
+        if (!tableId) {
+            return res.status(400).json(
+                formatResponse(false, "Invalid table ID format")
+            );
         }
-        res.status(200).json(updatedTable);
+        
+        // Format the table data before updating
+        const formattedData = formatTable(req.body);
+        
+        const updatedTable = await Table.findByIdAndUpdate(
+            tableId, 
+            formattedData, 
+            { new: true, runValidators: true }
+        );
+        
+        if (!updatedTable) {
+            return res.status(404).json(
+                formatResponse(false, "Table not found")
+            );
+        }
+        
+        res.status(200).json(
+            formatResponse(true, "Table updated successfully", updatedTable)
+        );
     } catch (error) {
         if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: error.message }); // Validation error from Mongoose
+            return res.status(400).json(
+                formatResponse(false, error.message)
+            );
         }
         next(error);
     }
@@ -48,11 +115,23 @@ const updateTable = async (req, res, next) => {
 
 const deleteTable = async (req, res, next) => {
     try {
-        const deletedTable = await Table.findByIdAndDelete(req.params.tableId);
-        if (!deletedTable) {
-            return res.status(404).json({ message: 'Table not found' });
+        const tableId = toObjectId(req.params.tableId);
+        if (!tableId) {
+            return res.status(400).json(
+                formatResponse(false, "Invalid table ID format")
+            );
         }
-        res.status(204).send(); // 204 No Content for successful deletion
+        
+        const deletedTable = await Table.findByIdAndDelete(tableId);
+        if (!deletedTable) {
+            return res.status(404).json(
+                formatResponse(false, "Table not found")
+            );
+        }
+        
+        res.status(200).json(
+            formatResponse(true, "Table deleted successfully")
+        );
     } catch (error) {
         next(error);
     }

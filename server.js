@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const tableRoutes = require('./routes/table');
 const passport = require('./config/passport'); 
 const session = require('express-session'); 
+const errorHandler = require('./middleware/errorHandler');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
@@ -38,6 +39,8 @@ app.use(passport.session());
 
 // Mount routes
 app.use('/tables', tableRoutes);
+app.use('/reservations', reservationRoutes);
+app.use('/auth', authRoutes);;
 
 // Test Route
 app.get('/', (req, res) => {
@@ -46,11 +49,11 @@ app.get('/', (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Error Handling Middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
-
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send('Something broke!');
+// });
+app.use(errorHandler);
 // Start the server
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
