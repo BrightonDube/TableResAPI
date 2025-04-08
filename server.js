@@ -93,7 +93,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Error Handler
 app.use(errorHandler);
 
-// Start
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+module.exports = app;
+
+// Server startup (won't execute during tests)
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => console.log(`Server running on port ${port}`));
+}

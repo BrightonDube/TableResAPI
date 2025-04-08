@@ -36,15 +36,23 @@ passport.use(
 
 // Serialize user to store in session
 passport.serializeUser((user, done) => {
+  console.log("serializeUser:", user.id || user._id);
   done(null, user.id);
 });
 
 // Deserialize user from session
 passport.deserializeUser(async (id, done) => {
+  console.log("deserializeUser - ID:", id);
   try {
     const user = await User.findById(id);
+    if (!user) {
+      console.log("deserializeUser - User not found for ID:", id); 
+      return done(null, false); 
+    }
+    console.log("deserializeUser - User found:", user); 
     done(null, user);
   } catch (error) {
+    console.error("deserializeUser Error:", err);
     done(error);
   }
 });
