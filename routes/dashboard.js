@@ -1,18 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const Table = require('../models/Table'); // Adjust path as needed
-const Reservation = require('../models/Reservation'); // Adjust path as needed
+const { verifyToken } = require('../middleware/authMiddleware'); // Import the middleware
+const Table = require('../models/Table');
+const Reservation = require('../models/Reservation');
 
-// Dashboard route with authentication check
-router.get('/', async (req, res) => {
-  console.log('Dashboard Route - req.user:', req.user); // Log req.user
-  console.log('Dashboard Route - req.session:', req.session); // Log
-  if (!req.isAuthenticated()) {
-    return res.redirect('/login'); // Or your login route
-  }
-
+// Apply verifyToken middleware to the entire dashboard route
+router.get('/', verifyToken, async (req, res) => {
   try {
-    console.log('Successfully authenticated.');
+    console.log('Successfully authenticated. User:', req.user);
+    
     const [tables, reservations] = await Promise.all([
       Table.find(),
       Reservation.find(),
@@ -25,7 +21,7 @@ router.get('/', async (req, res) => {
       reservations,
     });
   } catch (err) {
-    console.error(err);
+    console.error('Dashboard error:', err);
     res.status(500).render('error', {
       message: 'Error retrieving dashboard data',
       error: err,
