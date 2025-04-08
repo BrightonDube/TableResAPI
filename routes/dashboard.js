@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middleware/authMiddleware'); // Import the middleware
+const { verifyToken } = require('../middleware/authMiddleware'); 
 const Table = require('../models/Table');
 const Reservation = require('../models/Reservation');
 
-// Apply verifyToken middleware to the entire dashboard route
 router.get('/', verifyToken, async (req, res) => {
   try {
     console.log('Successfully authenticated. User:', req.user);
