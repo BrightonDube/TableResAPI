@@ -5,14 +5,14 @@ const Reservation = require('../models/Reservation'); // Adjust path as needed
 
 // Dashboard route with authentication check
 router.get('/', async (req, res) => {
+  console.log('Dashboard Route - req.user:', req.user); // Log req.user
+  console.log('Dashboard Route - req.session:', req.session); // Log
   if (!req.isAuthenticated()) {
-    console.log('Dashboard Route - req.user:', req.user); // Log req.user
-    console.log('Dashboard Route - req.session:', req.session); // Log
     return res.redirect('/login'); // Or your login route
   }
 
   try {
-    console.log("Successfully authenticated.");
+    console.log('Successfully authenticated.');
     const [tables, reservations] = await Promise.all([
       Table.find(),
       Reservation.find(),
