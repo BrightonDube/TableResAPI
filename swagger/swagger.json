@@ -8,6 +8,10 @@
   "servers": [
     {
       "url": "https://tableresapi.onrender.com/",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3000",
       "description": "Local development server"
     }
   ],
@@ -23,6 +27,10 @@
     {
       "name": "Restaurant Info",
       "description": "Operations for managing general restaurant information"
+    },
+    {
+      "name": "Reservation Statuses",
+      "description": "Operations for managing reservation statuses (e.g., Pending, Confirmed)"
     },
     {
       "name": "Authentication",
@@ -1105,6 +1113,330 @@
                 },
                 "example": {
                   "message": "Authentication required to access this endpoint."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reservation-statuses": {
+      "get": {
+        "tags": ["Reservation Statuses"],
+        "summary": "Get all reservation statuses",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of reservation statuses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReservationStatus"
+                  }
+                },
+                "example": [
+                  {
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e6",
+                    "name": "Pending",
+                    "description": "Awaiting confirmation from restaurant"
+                  },
+                  {
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e7",
+                    "name": "Confirmed",
+                    "description": "Reservation is confirmed"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Reservation Statuses"],
+        "summary": "Create a new reservation status",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationStatus"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reservation status created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationStatus"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e8",
+                  "name": "Seated",
+                  "description": "Guests are seated at the table"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Status name must be unique."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reservation-statuses/{statusId}": {
+      "parameters": [
+        {
+          "name": "statusId",
+          "in": "path",
+          "required": true,
+          "description": "ID of the reservation status to perform operations on",
+          "schema": {
+            "type": "string",
+            "example": "65a9b2c3d4e5f6a7b8c9d0e6"
+          }
+        }
+      ],
+      "get": {
+        "tags": ["Reservation Statuses"],
+        "summary": "Get a specific reservation status by ID",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of reservation status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationStatus"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e6",
+                  "name": "Pending",
+                  "description": "Awaiting confirmation from restaurant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid status ID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Invalid reservation status ID format."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Reservation status not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Reservation status not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Reservation Statuses"],
+        "summary": "Update an existing reservation status by ID",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationStatus"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reservation status updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservationStatus"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e6",
+                  "name": "Confirmed",
+                  "description": "Reservation is now confirmed by restaurant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Status name cannot be empty."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Reservation status not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Reservation status not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Reservation Statuses"],
+        "summary": "Delete a reservation status by ID",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "204": {
+            "description": "Reservation status deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Reservation status not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Reservation status not found."
                 }
               }
             }
