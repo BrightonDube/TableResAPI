@@ -22,15 +22,6 @@ const viewReservationsRoutes = require('./routes/viewReservations');
 const dashboardRoutes = require('./routes/dashboard');
 const expressLayouts = require('express-ejs-layouts');
 
-const {
-  verifyToken,
-  // optional: requireLogin
-} = require('./middleware/authMiddleware');
-const {
-  validateTableInput,
-  validateReservationInput,
-} = require('./middleware/dataValidationMiddleware');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
