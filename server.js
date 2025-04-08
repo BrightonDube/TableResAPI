@@ -34,20 +34,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
-    session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({ 
-        mongoUrl: process.env.MONGO_URI 
-      }),
-      cookie: {
-        httpOnly: true,
-        // secure: process.env.NODE_ENV === 'production',
-        maxAge: 1000 * 60 * 60 * 24 
-      }
-    })
-  );
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -104,7 +104,7 @@ if (require.main === module) {
   const server = app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
-  
+
   // Handle cleanup
   process.on('SIGTERM', () => {
     server.close(() => {
