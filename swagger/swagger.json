@@ -1,669 +1,723 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-      "title": "Restaurant Reservation API Documentation",
-      "version": "1.0.0",
-      "description": "API for managing restaurant table reservations, built with Node.js, Express, and MongoDB. Includes Google Authentication for secure access."
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Restaurant Reservation API Documentation",
+    "version": "1.0.0",
+    "description": "API for managing restaurant table reservations, built with Node.js, Express, and MongoDB. Includes Google Authentication for secure access."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Tables",
+      "description": "Operations related to restaurant tables"
     },
-    "servers": [
-      {
-        "url": "http://localhost:3000",
-        "description": "Local development server"
-      }
-      ],
-    "tags": [
-      {
-        "name": "Tables",
-        "description": "Operations related to restaurant tables"
-      },
-      {
-        "name": "Reservations",
-        "description": "Operations related to table reservations"
-      },
-      {
-        "name": "Restaurant Info",
-        "description": "Operations for managing general restaurant information"
-      },
-      {
-        "name": "Authentication",
-        "description": "Authentication endpoints (Google OAuth 2.0)"
-      }
-    ],
-    "components": {
-      "securitySchemes": {
-        "cookieAuth": {
-          "type": "apiKey",
-          "in": "cookie",
-          "name": "connect.sid",
-          "description": "Session cookie for Google Authentication. After successful Google login, a `connect.sid` cookie is set, which is used for subsequent authenticated requests."
-        }
-      },
-      "schemas": {
-        "ErrorResponse": {
-          "type": "object",
-          "properties": {
-            "message": {
-              "type": "string",
-              "description": "Error message describing the issue."
-            }
-          },
-          "example": {
-            "message": "Validation error: Customer name is required."
-          }
-        },
-        "Table": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "description": "Unique ID of the table (MongoDB ObjectId)",
-              "readOnly": true
-            },
-            "tableNumber": {
-              "type": "string",
-              "description": "Unique identifier for the table (e.g., 'T1', '102')",
-              "example": "T101"
-            },
-            "capacity": {
-              "type": "integer",
-              "format": "int32",
-              "description": "Maximum capacity of the table",
-              "example": 6
-            },
-            "location": {
-              "type": "string",
-              "description": "Location of the table within the restaurant (optional)",
-              "example": "Outdoor Patio"
-            },
-            "isAvailable": {
-              "type": "boolean",
-              "description": "Indicates if the table is currently available for reservations (optional, default: true)",
-              "example": true
-            }
-          },
-          "required": [
-            "tableNumber",
-            "capacity"
-          ],
-          "example": {
-            "tableNumber": "T101",
-            "capacity": 6,
-            "location": "Outdoor Patio",
-            "isAvailable": true
-          }
-        },
-        "Reservation": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "description": "Unique ID of the reservation (MongoDB ObjectId)",
-              "readOnly": true
-            },
-            "tableId": {
-              "type": "string",
-              "description": "ID of the table reserved (reference to Table collection)",
-              "example": "65a9b2c3d4e5f6a7b8c9d0e1"
-            },
-            "customerName": {
-              "type": "string",
-              "description": "Name of the customer making the reservation",
-              "example": "Jane Smith"
-            },
-            "customerPhone": {
-              "type": "string",
-              "description": "Phone number of the customer (optional)",
-              "example": "123-456-7890"
-            },
-            "reservationTime": {
-              "type": "string",
-              "format": "date-time",
-              "description": "Date and time of the reservation (ISO 8601 format)",
-              "example": "2024-08-15T13:30:00Z"
-            },
-            "partySize": {
-              "type": "integer",
-              "format": "int32",
-              "description": "Number of people in the party",
-              "example": 4
-            },
-            "status": {
-              "type": "string",
-              "description": "Status of the reservation",
-              "enum": ["Pending", "Confirmed", "Seated", "Cancelled"],
-              "default": "Pending",
-              "example": "Confirmed"
-            },
-            "notes": {
-              "type": "string",
-              "description": "Additional notes for the reservation (optional)",
-              "example": "Wheelchair access needed"
-            }
-          },
-          "required": [
-            "tableId",
-            "customerName",
-            "reservationTime",
-            "partySize"
-          ],
-          "example": {
-            "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
-            "customerName": "Jane Smith",
-            "reservationTime": "2024-08-15T13:30:00Z",
-            "partySize": 4,
-            "status": "Confirmed",
-            "notes": "Wheelchair access needed"
-          }
-        },
-        "RestaurantInfo": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "description": "Unique ID of the restaurant info document (MongoDB ObjectId)",
-              "readOnly": true
-            },
-            "name": {
-              "type": "string",
-              "description": "Name of the restaurant",
-              "example": "Gourmet Gardens"
-            },
-            "address": {
-              "type": "string",
-              "description": "Restaurant address",
-              "example": "456 Elm Street, Anytown"
-            },
-            "phoneNumber": {
-              "type": "string",
-              "description": "Restaurant phone number",
-              "example": "555-123-0000"
-            },
-            "openingHours": {
-              "type": "string",
-              "description": "Restaurant opening hours",
-              "example": "Tue-Sun: 12:00 PM - 9:00 PM"
-            },
-            "website": {
-              "type": "string",
-              "format": "url",
-              "description": "Restaurant website URL (optional)",
-              "example": "https://www.gourmetgardens.com"
-            }
-          },
-          "required": [
-            "name"
-          ],
-          "example": {
-            "name": "Gourmet Gardens",
-            "address": "456 Elm Street, Anytown",
-            "phoneNumber": "555-123-0000",
-            "openingHours": "Tue-Sun: 12:00 PM - 9:00 PM",
-            "website": "https://www.gourmetgardens.com"
-          }
-        },
-        "User": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "description": "Unique ID of the user (MongoDB ObjectId)",
-              "readOnly": true
-            },
-            "googleId": {
-              "type": "string",
-              "description": "Google ID of the user",
-              "example": "987654321098765432109"
-            },
-            "email": {
-              "type": "string",
-              "format": "email",
-              "description": "User's email address",
-              "example": "admin@restaurant.com"
-            },
-            "name": {
-              "type": "string",
-              "description": "User's full name",
-              "example": "Restaurant Admin"
-            }
-          },
-          "required": [
-            "googleId",
-            "email",
-            "name"
-          ],
-          "example": {
-            "googleId": "987654321098765432109",
-            "email": "admin@restaurant.com",
-            "name": "Restaurant Admin"
-          }
-        },
-        "ReservationStatus": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "description": "Unique ID of the reservation status (MongoDB ObjectId)",
-              "readOnly": true
-            },
-            "name": {
-              "type": "string",
-              "description": "Name of the status (e.g., 'Pending', 'Confirmed')",
-              "example": "Pending"
-            },
-            "description": {
-              "type": "string",
-              "description": "Description of the status (optional)",
-              "example": "Awaiting confirmation from restaurant"
-            }
-          },
-          "required": [
-            "name"
-          ],
-          "example": {
-            "name": "Pending",
-            "description": "Awaiting confirmation from restaurant"
-          }
-        }
+    {
+      "name": "Reservations",
+      "description": "Operations related to table reservations"
+    },
+    {
+      "name": "Restaurant Info",
+      "description": "Operations for managing general restaurant information"
+    },
+    {
+      "name": "Authentication",
+      "description": "Authentication endpoints (Google OAuth 2.0)"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "connect.sid",
+        "description": "Session cookie for Google Authentication. After successful Google login, a `connect.sid` cookie is set, which is used for subsequent authenticated requests."
       }
     },
-    "paths": {
-      "/tables": {
-        "post": {
-          "tags": ["Tables"],
-          "summary": "Create a new table",
-          "security": [{"cookieAuth": []}],
-          "requestBody": {
-            "required": true,
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message describing the issue."
+          }
+        },
+        "example": {
+          "message": "Validation error: Customer name is required."
+        }
+      },
+      "Table": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique ID of the table (MongoDB ObjectId)",
+            "readOnly": true
+          },
+          "tableNumber": {
+            "type": "string",
+            "description": "Unique identifier for the table (e.g., 'T1', '102')",
+            "example": "T101"
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Maximum capacity of the table",
+            "example": 6
+          },
+          "location": {
+            "type": "string",
+            "description": "Location of the table within the restaurant (optional)",
+            "example": "Outdoor Patio"
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "description": "Indicates if the table is currently available for reservations (optional, default: true)",
+            "example": true
+          }
+        },
+        "required": ["tableNumber", "capacity"],
+        "example": {
+          "tableNumber": "T101",
+          "capacity": 6,
+          "location": "Outdoor Patio",
+          "isAvailable": true
+        }
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique ID of the reservation (MongoDB ObjectId)",
+            "readOnly": true
+          },
+          "tableId": {
+            "type": "string",
+            "description": "ID of the table reserved (reference to Table collection)",
+            "example": "65a9b2c3d4e5f6a7b8c9d0e1"
+          },
+          "customerName": {
+            "type": "string",
+            "description": "Name of the customer making the reservation",
+            "example": "Jane Smith"
+          },
+          "customerPhone": {
+            "type": "string",
+            "description": "Phone number of the customer (optional)",
+            "example": "123-456-7890"
+          },
+          "reservationTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time of the reservation (ISO 8601 format)",
+            "example": "2024-08-15T13:30:00Z"
+          },
+          "partySize": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of people in the party",
+            "example": 4
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the reservation",
+            "enum": ["Pending", "Confirmed", "Seated", "Cancelled"],
+            "default": "Pending",
+            "example": "Confirmed"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes for the reservation (optional)",
+            "example": "Wheelchair access needed"
+          }
+        },
+        "required": ["tableId", "customerName", "reservationTime", "partySize"],
+        "example": {
+          "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+          "customerName": "Jane Smith",
+          "reservationTime": "2024-08-15T13:30:00Z",
+          "partySize": 4,
+          "status": "Confirmed",
+          "notes": "Wheelchair access needed"
+        }
+      },
+      "RestaurantInfo": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique ID of the restaurant info document (MongoDB ObjectId)",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the restaurant",
+            "example": "Gourmet Gardens"
+          },
+          "address": {
+            "type": "string",
+            "description": "Restaurant address",
+            "example": "456 Elm Street, Anytown"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Restaurant phone number",
+            "example": "555-123-0000"
+          },
+          "openingHours": {
+            "type": "string",
+            "description": "Restaurant opening hours",
+            "example": "Tue-Sun: 12:00 PM - 9:00 PM"
+          },
+          "website": {
+            "type": "string",
+            "format": "url",
+            "description": "Restaurant website URL (optional)",
+            "example": "https://www.gourmetgardens.com"
+          }
+        },
+        "required": ["name"],
+        "example": {
+          "name": "Gourmet Gardens",
+          "address": "456 Elm Street, Anytown",
+          "phoneNumber": "555-123-0000",
+          "openingHours": "Tue-Sun: 12:00 PM - 9:00 PM",
+          "website": "https://www.gourmetgardens.com"
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique ID of the user (MongoDB ObjectId)",
+            "readOnly": true
+          },
+          "googleId": {
+            "type": "string",
+            "description": "Google ID of the user",
+            "example": "987654321098765432109"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address",
+            "example": "admin@restaurant.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's full name",
+            "example": "Restaurant Admin"
+          }
+        },
+        "required": ["googleId", "email", "name"],
+        "example": {
+          "googleId": "987654321098765432109",
+          "email": "admin@restaurant.com",
+          "name": "Restaurant Admin"
+        }
+      },
+      "ReservationStatus": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Unique ID of the reservation status (MongoDB ObjectId)",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the status (e.g., 'Pending', 'Confirmed')",
+            "example": "Pending"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the status (optional)",
+            "example": "Awaiting confirmation from restaurant"
+          }
+        },
+        "required": ["name"],
+        "example": {
+          "name": "Pending",
+          "description": "Awaiting confirmation from restaurant"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/tables": {
+      "post": {
+        "tags": ["Tables"],
+        "summary": "Create a new table",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Table"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Table created successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Table"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e2",
+                  "tableNumber": "T102",
+                  "capacity": 4,
+                  "location": "Indoor, Back Room",
+                  "isAvailable": true
                 }
               }
             }
           },
-          "responses": {
-            "201": {
-              "description": "Table created successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Table"
-                  },
-                  "example": {
-                    "_id": "65a9b2c3d4e5f6a7b8c9d0e2",
-                    "tableNumber": "T102",
-                    "capacity": 4,
-                    "location": "Indoor, Back Room",
-                    "isAvailable": true
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Bad request - validation errors",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Table number must be unique."
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+          "400": {
+            "description": "Bad request - validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Table number must be unique."
                 }
               }
             }
-          }
-        },
-        "get": {
-          "tags": ["Tables"],
-          "summary": "Get all tables",
-          "security": [{"cookieAuth": []}],
-          "responses": {
-            "200": {
-              "description": "Successful retrieval of tables",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Table"
-                    }
-                  },
-                  "example": [
-                    {
-                      "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
-                      "tableNumber": "T101",
-                      "capacity": 6,
-                      "location": "Outdoor Patio",
-                      "isAvailable": true
-                    },
-                    {
-                      "_id": "65a9b2c3d4e5f6a7b8c9d0e2",
-                      "tableNumber": "T102",
-                      "capacity": 4,
-                      "location": "Indoor, Back Room",
-                      "isAvailable": false
-                    }
-                  ]
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
                 }
               }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
                 }
               }
             }
           }
         }
       },
-      "/tables/{tableId}": {
+      "get": {
+        "tags": ["Tables"],
+        "summary": "Get all tables",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of tables",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Table"
+                  }
+                },
+                "example": [
+                  {
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
+                    "tableNumber": "T101",
+                    "capacity": 6,
+                    "location": "Outdoor Patio",
+                    "isAvailable": true
+                  },
+                  {
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e2",
+                    "tableNumber": "T102",
+                    "capacity": 4,
+                    "location": "Indoor, Back Room",
+                    "isAvailable": false
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tables/{tableId}": {
+      "parameters": [
+        {
+          "name": "tableId",
+          "in": "path",
+          "required": true,
+          "description": "ID of the table to perform operations on",
+          "schema": {
+            "type": "string",
+            "example": "65a9b2c3d4e5f6a7b8c9d0e1"
+          }
+        }
+      ],
+      "get": {
+        "tags": ["Tables"],
+        "summary": "Get a specific table by ID",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of table",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Table"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
+                  "tableNumber": "T101",
+                  "capacity": 6,
+                  "location": "Outdoor Patio",
+                  "isAvailable": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Table not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Table not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Tables"],
+        "summary": "Update an existing table by ID",
+        "security": [{ "cookieAuth": [] }],
         "parameters": [
           {
             "name": "tableId",
             "in": "path",
             "required": true,
-            "description": "ID of the table to perform operations on",
+            "description": "ID of the table to update",
             "schema": {
               "type": "string",
               "example": "65a9b2c3d4e5f6a7b8c9d0e1"
             }
           }
         ],
-        "get": {
-          "tags": ["Tables"],
-          "summary": "Get a specific table by ID",
-          "security": [{"cookieAuth": []}],
-          "responses": {
-            "200": {
-              "description": "Successful retrieval of table",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Table"
-                  },
-                  "example": {
-                    "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
-                    "tableNumber": "T101",
-                    "capacity": 6,
-                    "location": "Outdoor Patio",
-                    "isAvailable": true
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Table not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Table not found."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
-                }
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Table"
               }
             }
           }
         },
-        "put": {
-          "tags": ["Tables"],
-          "summary": "Update an existing table by ID",
-          "security": [{"cookieAuth": []}],
-          "parameters": [
-            {
-              "name": "tableId",
-              "in": "path",
-              "required": true,
-              "description": "ID of the table to update",
-              "schema": {
-                "type": "string",
-                "example": "65a9b2c3d4e5f6a7b8c9d0e1"
-              }
-            }
-          ],
-          "requestBody": {
-            "required": true,
+        "responses": {
+          "200": {
+            "description": "Table updated successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Table"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
+                  "tableNumber": "T101-Updated",
+                  "capacity": 8,
+                  "location": "Outdoor Garden",
+                  "isAvailable": false
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Table updated successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Table"
-                  },
-                  "example": {
-                    "_id": "65a9b2c3d4e5f6a7b8c9d0e1",
-                    "tableNumber": "T101-Updated",
-                    "capacity": 8,
-                    "location": "Outdoor Garden",
-                    "isAvailable": false
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Bad request - validation errors",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Invalid location provided."
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Table not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Table with ID 65a9b2c3d4e5f6a7b8c9d0e1 not found."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+          "400": {
+            "description": "Bad request - validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Invalid location provided."
                 }
               }
             }
-          }
-        },
-        "delete": {
-          "tags": ["Tables"],
-          "summary": "Delete a table by ID",
-          "security": [{"cookieAuth": []}],
-          "parameters": [
-            {
-              "name": "tableId",
-              "in": "path",
-              "required": true,
-              "description": "ID of the table to delete",
-              "schema": {
-                "type": "string",
-                "example": "65a9b2c3d4e5f6a7b8c9d0e1"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
               }
             }
-          ],
-          "responses": {
-            "204": {
-              "description": "Table deleted successfully"
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
+          },
+          "404": {
+            "description": "Table not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Table with ID 65a9b2c3d4e5f6a7b8c9d0e1 not found."
                 }
               }
-            },
-            "404": {
-              "description": "Table not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Table with ID 65a9b2c3d4e5f6a7b8c9d0e1 not found."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
                 }
               }
             }
           }
         }
       },
-      "/reservations": {
-        "post": {
-          "tags": ["Reservations"],
-          "summary": "Create a new reservation",
-          "security": [{"cookieAuth": []}],
-          "requestBody": {
+      "delete": {
+        "tags": ["Tables"],
+        "summary": "Delete a table by ID",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          {
+            "name": "tableId",
+            "in": "path",
             "required": true,
+            "description": "ID of the table to delete",
+            "schema": {
+              "type": "string",
+              "example": "65a9b2c3d4e5f6a7b8c9d0e1"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Table deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Reservation"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
                 }
               }
             }
           },
-          "responses": {
-            "201": {
-              "description": "Reservation created successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
+          "404": {
+            "description": "Table not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Table with ID 65a9b2c3d4e5f6a7b8c9d0e1 not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reservations": {
+      "post": {
+        "tags": ["Reservations"],
+        "summary": "Create a new reservation",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reservation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reservation created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
+                  "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+                  "customerName": "Peter Jones",
+                  "reservationTime": "2024-08-18T18:00:00Z",
+                  "partySize": 2,
+                  "status": "Pending",
+                  "customerPhone": "987-654-3210",
+                  "notes": "Anniversary dinner"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Invalid tableId provided."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Reservations"],
+        "summary": "Get all reservations",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of reservations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
                     "$ref": "#/components/schemas/Reservation"
-                  },
-                  "example": {
+                  }
+                },
+                "example": [
+                  {
                     "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
                     "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
                     "customerName": "Peter Jones",
@@ -672,524 +726,454 @@
                     "status": "Pending",
                     "customerPhone": "987-654-3210",
                     "notes": "Anniversary dinner"
+                  },
+                  {
+                    "_id": "65a9b2c3d4e5f6a7b8c9d0e4",
+                    "tableId": "65a9b2c3d4e5f6a7b8c9d0e2",
+                    "customerName": "Mary Brown",
+                    "reservationTime": "2024-08-19T19:30:00Z",
+                    "partySize": 6,
+                    "status": "Confirmed",
+                    "customerPhone": "555-999-1111",
+                    "notes": null
                   }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
                 }
               }
-            },
-            "400": {
-              "description": "Bad request - validation errors",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Invalid tableId provided."
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
                 }
               }
             }
           }
-        },
-        "get": {
-          "tags": ["Reservations"],
-          "summary": "Get all reservations",
-          "security": [{"cookieAuth": []}],
-          "responses": {
-            "200": {
-              "description": "Successful retrieval of reservations",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Reservation"
-                    }
-                  },
-                  "example": [
-                    {
-                      "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
-                      "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
-                      "customerName": "Peter Jones",
-                      "reservationTime": "2024-08-18T18:00:00Z",
-                      "partySize": 2,
-                      "status": "Pending",
-                      "customerPhone": "987-654-3210",
-                      "notes": "Anniversary dinner"
-                    },
-                    {
-                      "_id": "65a9b2c3d4e5f6a7b8c9d0e4",
-                      "tableId": "65a9b2c3d4e5f6a7b8c9d0e2",
-                      "customerName": "Mary Brown",
-                      "reservationTime": "2024-08-19T19:30:00Z",
-                      "partySize": 6,
-                      "status": "Confirmed",
-                      "customerPhone": "555-999-1111",
-                      "notes": null
-                    }
-                  ]
+        }
+      }
+    },
+    "/api/reservations/{reservationId}": {
+      "parameters": [
+        {
+          "name": "reservationId",
+          "in": "path",
+          "required": true,
+          "description": "ID of the reservation to perform operations on",
+          "schema": {
+            "type": "string",
+            "example": "65a9b2c3d4e5f6a7b8c9d0e3"
+          }
+        }
+      ],
+      "get": {
+        "tags": ["Reservations"],
+        "summary": "Get a specific reservation by ID",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of reservation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
+                  "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+                  "customerName": "Peter Jones",
+                  "reservationTime": "2024-08-18T18:00:00Z",
+                  "partySize": 2,
+                  "status": "Pending",
+                  "customerPhone": "987-654-3210",
+                  "notes": "Anniversary dinner"
                 }
               }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
                 }
               }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+            }
+          },
+          "404": {
+            "description": "Reservation not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Reservation not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
                 }
               }
             }
           }
         }
       },
-      "/reservations/{reservationId}": {
+      "put": {
+        "tags": ["Reservations"],
+        "summary": "Update an existing reservation by ID",
+        "security": [{ "cookieAuth": [] }],
         "parameters": [
           {
             "name": "reservationId",
             "in": "path",
             "required": true,
-            "description": "ID of the reservation to perform operations on",
+            "description": "ID of the reservation to update",
             "schema": {
               "type": "string",
               "example": "65a9b2c3d4e5f6a7b8c9d0e3"
             }
           }
         ],
-        "get": {
-          "tags": ["Reservations"],
-          "summary": "Get a specific reservation by ID",
-          "security": [{"cookieAuth": []}],
-          "responses": {
-            "200": {
-              "description": "Successful retrieval of reservation",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Reservation"
-                  },
-                  "example": {
-                    "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
-                    "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
-                    "customerName": "Peter Jones",
-                    "reservationTime": "2024-08-18T18:00:00Z",
-                    "partySize": 2,
-                    "status": "Pending",
-                    "customerPhone": "987-654-3210",
-                    "notes": "Anniversary dinner"
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Reservation not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Reservation not found."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
-                }
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reservation"
               }
             }
           }
         },
-        "put": {
-          "tags": ["Reservations"],
-          "summary": "Update an existing reservation by ID",
-          "security": [{"cookieAuth": []}],
-          "parameters": [
-            {
-              "name": "reservationId",
-              "in": "path",
-              "required": true,
-              "description": "ID of the reservation to update",
-              "schema": {
-                "type": "string",
-                "example": "65a9b2c3d4e5f6a7b8c9d0e3"
-              }
-            }
-          ],
-          "requestBody": {
-            "required": true,
+        "responses": {
+          "200": {
+            "description": "Reservation updated successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Reservation"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
+                  "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
+                  "customerName": "Peter J. Jones",
+                  "reservationTime": "2024-08-18T18:00:00Z",
+                  "partySize": 3,
+                  "status": "Confirmed",
+                  "customerPhone": "987-654-3210",
+                  "notes": "Special request: window seat"
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Reservation updated successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/Reservation"
-                  },
-                  "example": {
-                    "_id": "65a9b2c3d4e5f6a7b8c9d0e3",
-                    "tableId": "65a9b2c3d4e5f6a7b8c9d0e1",
-                    "customerName": "Peter J. Jones",
-                    "reservationTime": "2024-08-18T18:00:00Z",
-                    "partySize": 3,
-                    "status": "Confirmed",
-                    "customerPhone": "987-654-3210",
-                    "notes": "Special request: window seat"
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Bad request - validation errors",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Invalid status value."
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Reservation not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Reservation with ID 65a9b2c3d4e5f6a7b8c9d0e3 not found."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+          "400": {
+            "description": "Bad request - validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Invalid status value."
                 }
               }
             }
-          }
-        },
-        "delete": {
-          "tags": ["Reservations"],
-          "summary": "Delete a reservation by ID",
-          "security": [{"cookieAuth": []}],
-          "parameters": [
-            {
-              "name": "reservationId",
-              "in": "path",
-              "required": true,
-              "description": "ID of the reservation to delete",
-              "schema": {
-                "type": "string",
-                "example": "65a9b2c3d4e5f6a7b8c9d0e3"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
               }
             }
-          ],
-          "responses": {
-            "204": {
-              "description": "Reservation deleted successfully"
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
+          },
+          "404": {
+            "description": "Reservation not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Reservation with ID 65a9b2c3d4e5f6a7b8c9d0e3 not found."
                 }
               }
-            },
-            "404": {
-              "description": "Reservation not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Reservation with ID 65a9b2c3d4e5f6a7b8c9d0e3 not found."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
                 }
               }
             }
           }
         }
       },
-      "/restaurant-info": {
-        "get": {
-          "tags": ["Restaurant Info"],
-          "summary": "Get restaurant information",
-          "responses": {
-            "200": {
-              "description": "Successful retrieval of restaurant information",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/RestaurantInfo"
-                  },
-                  "example": {
-                    "_id": "65a9b2c3d4e5f6a7b8c9d0e5",
-                    "name": "Gourmet Gardens",
-                    "address": "456 Elm Street, Anytown",
-                    "phoneNumber": "555-123-0000",
-                    "openingHours": "Tue-Sun: 12:00 PM - 9:00 PM",
-                    "website": "https://www.gourmetgardens.com"
-                  }
+      "delete": {
+        "tags": ["Reservations"],
+        "summary": "Delete a reservation by ID",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          {
+            "name": "reservationId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the reservation to delete",
+            "schema": {
+              "type": "string",
+              "example": "65a9b2c3d4e5f6a7b8c9d0e3"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Reservation deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
                 }
               }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+            }
+          },
+          "404": {
+            "description": "Reservation not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Reservation with ID 65a9b2c3d4e5f6a7b8c9d0e3 not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
                 }
               }
             }
           }
-        },
-        "put": {
-          "tags": ["Restaurant Info"],
-          "summary": "Update restaurant information",
-          "security": [{"cookieAuth": []}],
-          "requestBody": {
-            "required": true,
+        }
+      }
+    },
+    "/api/restaurant-info": {
+      "get": {
+        "tags": ["Restaurant Info"],
+        "summary": "Get restaurant information",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of restaurant information",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RestaurantInfo"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e5",
+                  "name": "Gourmet Gardens",
+                  "address": "456 Elm Street, Anytown",
+                  "phoneNumber": "555-123-0000",
+                  "openingHours": "Tue-Sun: 12:00 PM - 9:00 PM",
+                  "website": "https://www.gourmetgardens.com"
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Restaurant information updated successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/RestaurantInfo"
-                  },
-                  "example": {
-                    "_id": "65a9b2c3d4e5f6a7b8c9d0e5",
-                    "name": "Gourmet Gardens & Patio",
-                    "address": "456 Elm Street, Anytown, Updated Address",
-                    "phoneNumber": "555-123-0000",
-                    "openingHours": "Tue-Sun: 12:00 PM - 10:00 PM",
-                    "website": "https://www.gourmetgardenspatio.com"
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Bad request - validation errors",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Phone number format is invalid."
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized - authentication required",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Authentication required to access this endpoint."
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Internal server error."
-                  }
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
                 }
               }
             }
           }
         }
       },
-      "/auth/google": {
-        "get": {
-          "tags": ["Authentication"],
-          "summary": "Initiate Google OAuth 2.0 login",
-          "description": "Redirects user to Google's authentication page.",
-          "responses": {
-            "302": {
-              "description": "Redirect to Google authentication page."
+      "put": {
+        "tags": ["Restaurant Info"],
+        "summary": "Update restaurant information",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestaurantInfo"
+              }
             }
           }
-        }
-      },
-      "/auth/google/callback": {
-        "get": {
-          "tags": ["Authentication"],
-          "summary": "Google OAuth 2.0 callback",
-          "description": "Callback URL that Google redirects to after authentication. Handles user login or registration.",
-          "responses": {
-            "302": {
-              "description": "Redirect to application dashboard after successful authentication."
-            },
-            "500": {
-              "description": "Internal server error during authentication",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  },
-                  "example": {
-                    "message": "Google authentication failed."
-                  }
+        },
+        "responses": {
+          "200": {
+            "description": "Restaurant information updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantInfo"
+                },
+                "example": {
+                  "_id": "65a9b2c3d4e5f6a7b8c9d0e5",
+                  "name": "Gourmet Gardens & Patio",
+                  "address": "456 Elm Street, Anytown, Updated Address",
+                  "phoneNumber": "555-123-0000",
+                  "openingHours": "Tue-Sun: 12:00 PM - 10:00 PM",
+                  "website": "https://www.gourmetgardenspatio.com"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Phone number format is invalid."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Authentication required to access this endpoint."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Internal server error."
                 }
               }
             }
           }
         }
-      },
-      "/auth/logout": {
-        "get": {
-          "tags": ["Authentication"],
-          "summary": "Logout user",
-          "description": "Logs out the currently authenticated user by clearing the session cookie.",
-          "security": [{"cookieAuth": []}],
-          "responses": {
-            "200": {
-              "description": "User successfully logged out. Redirects to login page."
+      }
+    },
+    "/api/auth/google": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Initiate Google OAuth 2.0 login",
+        "description": "Redirects user to Google's authentication page.",
+        "responses": {
+          "302": {
+            "description": "Redirect to Google authentication page."
+          }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Google OAuth 2.0 callback",
+        "description": "Callback URL that Google redirects to after authentication. Handles user login or registration.",
+        "responses": {
+          "302": {
+            "description": "Redirect to application dashboard after successful authentication."
+          },
+          "500": {
+            "description": "Internal server error during authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Google authentication failed."
+                }
+              }
             }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Logout user",
+        "description": "Logs out the currently authenticated user by clearing the session cookie.",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "User successfully logged out. Redirects to login page."
           }
         }
       }
     }
   }
+}
