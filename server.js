@@ -20,6 +20,8 @@ const authRoutes = require('./routes/auth');
 const viewTablesRoutes = require('./routes/viewTables');
 const viewReservationsRoutes = require('./routes/viewReservations');
 const dashboardRoutes = require('./routes/dashboard');
+const restaurantInfoRoutes = require('./routes/restaurantInfo');
+const reservationStatusRoutes = require('./routes/reservationStatus'); 
 const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
@@ -68,6 +70,9 @@ app.use((req, res, next) => {
 // API Routes
 app.use('/api/tables', tableRoutes);
 app.use('/api/reservations', reservationRoutes);
+app.use('/api', restaurantInfoRoutes); // Mount restaurant info under /api
+app.use('/api', reservationStatusRoutes);
+
 app.use('/auth', authRoutes);
 
 // View Routes
