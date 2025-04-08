@@ -22,7 +22,7 @@
             </div>
             <div>
                 <% if (user) { %>
-                    <span class="mr-2">👤 <%= user.name %></span>
+                    <span class="mr-2">👤<%= user.name %></span>
                     <a href="/auth/logout" class="btn btn-outline-light btn-sm">Logout</a>
                     <% } else { %>
                         <a href="/auth/google" class="btn btn-outline-light btn-sm">Login with Google</a>
@@ -41,7 +41,7 @@
     <!-- Footer -->
     <footer class="bg-dark text-white text-center py-3 mt-auto">
         <div class="container">
-            <p class="mb-0">© <%= new Date().getFullYear() %> Restaurant Reservations. All rights reserved.</p>
+            <p class="mb-0">© <%= new Date().getFullYear() %> Restaurant Reservations. All rights reserved - Created by Brighton Dube</p>
         </div>
     </footer>
 

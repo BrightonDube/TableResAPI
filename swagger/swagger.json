@@ -1125,7 +1125,7 @@
         }
       }
     },
-    "/api/auth/google": {
+    "/auth/google": {
       "get": {
         "tags": ["Authentication"],
         "summary": "Initiate Google OAuth 2.0 login",

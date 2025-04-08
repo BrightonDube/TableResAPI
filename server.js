@@ -19,6 +19,7 @@ const reservationRoutes = require('./routes/reservation');
 const authRoutes = require('./routes/auth');
 const viewTablesRoutes = require('./routes/viewTables');
 const viewReservationsRoutes = require('./routes/viewReservations');
+const dashboardRoutes = require('./routes/dashboard');
 const expressLayouts = require('express-ejs-layouts');
 
 const {
@@ -93,23 +94,7 @@ app.get('/login', (req, res) => {
 });
 
 // Dashboard
-app.get('/dashboard', async (req, res) => {
-  try {
-    const [tables, reservations] = await Promise.all([
-      Table.find(),
-      Reservation.find(),
-    ]);
-    res.render('dashboard', {
-      title: 'Dashboard',
-      user: req.user,
-      tables,
-      reservations,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error retrieving data');
-  }
-});
+app.use('/dashboard', dashboardRoutes);
 
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
