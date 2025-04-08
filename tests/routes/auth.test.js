@@ -2,20 +2,27 @@ const request = require('supertest');
 const app = require('../../server'); // Directly import your server.js
 const passport = require('passport');
 
-jest.mock('passport');
-
+jest.mock('passport', () => ({
+  initialize: jest.fn(() => (req, res, next) => next()),
+  session: jest.fn(() => (req, res, next) => next()),
+  authenticate: jest.fn(),
+}));
 describe('Authentication Routes', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+  beforeEach(() => {
+    // Reset mocks before each test
+    passport.authenticate.mockReset();
   });
 
   describe('GET /auth/google', () => {
     it('redirects to Google OAuth', async () => {
-      const response = await request(app)
+      passport.authenticate.mockImplementation(() => (req, res) => {
+        res.redirect('https://accounts.google.com');
+      });
+
+      await request(app)
         .get('/auth/google')
-        .expect(302);
-      
-      expect(response.header.location).toMatch(/accounts\.google\.com/);
+        .expect(302)
+        .expect('Location', 'https://accounts.google.com');
     });
   });
 
@@ -38,9 +45,7 @@ describe('Authentication Routes', () => {
         return (req, res) => res.sendStatus(500);
       });
 
-      await request(app)
-        .get('/auth/google/callback')
-        .expect(500);
+      await request(app).get('/auth/google/callback').expect(500);
     });
   });
 

@@ -96,7 +96,19 @@ app.use(errorHandler);
 module.exports = app;
 
 // Server startup (won't execute during tests)
+module.exports = app;
+
+// Only start server when not in test mode
 if (require.main === module) {
   const port = process.env.PORT || 3000;
-  app.listen(port, () => console.log(`Server running on port ${port}`));
+  const server = app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+  
+  // Handle cleanup
+  process.on('SIGTERM', () => {
+    server.close(() => {
+      console.log('Server closed');
+    });
+  });
 }
