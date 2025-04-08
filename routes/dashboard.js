@@ -12,6 +12,7 @@ router.get('/', async (req, res) => {
   }
 
   try {
+    console.log("Successfully authenticated.");
     const [tables, reservations] = await Promise.all([
       Table.find(),
       Reservation.find(),
