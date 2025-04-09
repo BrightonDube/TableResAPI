@@ -73,7 +73,7 @@ app.use('/api/tables', tableRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api', restaurantInfoRoutes);
 app.use('/api', reservationStatusRoutes);
-app.use('/api', viewUsersRoutes);
+app.use('/api/users', viewUsersRoutes);
 
 app.use('/auth', authRoutes);
 
