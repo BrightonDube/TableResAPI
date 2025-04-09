@@ -1,7 +1,7 @@
 // routes/userRoutes.js
 const express = require('express');
 const userController = require('../controllers/userController');
-const validationMiddleware = require('../middleware/validationMiddleware'); 
+const validationMiddleware = require('../middleware/dataValidationMiddleware'); 
 const router = express.Router();
 
 router.post('/', validationMiddleware.validateUserInput, userController.createUser); 

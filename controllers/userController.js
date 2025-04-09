@@ -1,6 +1,6 @@
 // controllers/userController.js
 const User = require('../models/User');
-const validationMiddleware = require('../middleware/validationMiddleware');
+const validationMiddleware = require('../middleware/dataValidationMiddleware');
 const errorHandler = require('../middleware/errorHandler');
 const { formatResponse } = require('../utils/dataTransformUtils');
 
