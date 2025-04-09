@@ -19,7 +19,7 @@ const reservationRoutes = require('./routes/reservation');
 const authRoutes = require('./routes/auth');
 const viewTablesRoutes = require('./routes/viewTables');
 const viewReservationsRoutes = require('./routes/viewReservations');
-const viewUsersRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboard');
 const restaurantInfoRoutes = require('./routes/restaurantInfo');
 const reservationStatusRoutes = require('./routes/reservationStatus');
@@ -73,7 +73,7 @@ app.use('/api/tables', tableRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api', restaurantInfoRoutes);
 app.use('/api', reservationStatusRoutes);
-app.use('/api/users', viewUsersRoutes);
+app.use('/api/users', userRoutes);
 
 app.use('/auth', authRoutes);
 
