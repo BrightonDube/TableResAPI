@@ -19,6 +19,7 @@ const reservationRoutes = require('./routes/reservation');
 const authRoutes = require('./routes/auth');
 const viewTablesRoutes = require('./routes/viewTables');
 const viewReservationsRoutes = require('./routes/viewReservations');
+const viewUsersRoutes = require('./routes/viewUsers');
 const dashboardRoutes = require('./routes/dashboard');
 const restaurantInfoRoutes = require('./routes/restaurantInfo');
 const reservationStatusRoutes = require('./routes/reservationStatus'); 
@@ -78,6 +79,7 @@ app.use('/auth', authRoutes);
 // View Routes
 app.use('/tables', viewTablesRoutes);
 app.use('/reservations', viewReservationsRoutes);
+app.use('/users', viewUsersRoutes);
 
 // Home
 app.get('/', (req, res) => {

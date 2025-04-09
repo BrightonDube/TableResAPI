@@ -118,9 +118,34 @@ const validateReservationStatusInput = (req, res, next) => {
   next();
 };
 
+const validateUserInput = (req, res, next) => {
+  const schema = Joi.object({
+    googleId: Joi.string().trim().required().messages({
+      'string.empty': 'Google ID is required.',
+      'any.required': 'Google ID is required.',
+    }),
+    name: Joi.string().trim().required().messages({
+      'string.empty': 'Name is required.',
+      'any.required': 'Name is required.',
+    }),
+    email: Joi.string().trim().email().required().messages({
+      'string.empty': 'Email is required.',
+      'any.required': 'Email is required.',
+      'string.email': 'Email must be a valid email address.',
+    }),
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+  next();
+};
+
 module.exports = {
   validateTableInput,
   validateReservationInput,
   validateRestaurantInfoInput,
   validateReservationStatusInput,
+  validateUserInput,
 };
