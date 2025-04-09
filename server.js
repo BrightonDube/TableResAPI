@@ -19,7 +19,7 @@ const reservationRoutes = require('./routes/reservation');
 const authRoutes = require('./routes/auth');
 const viewTablesRoutes = require('./routes/viewTables');
 const viewReservationsRoutes = require('./routes/viewReservations');
-const viewUsersRoutes = require('./routes/viewUsers');
+const viewUsersRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboard');
 const restaurantInfoRoutes = require('./routes/restaurantInfo');
 const reservationStatusRoutes = require('./routes/reservationStatus'); 
@@ -71,7 +71,7 @@ app.use((req, res, next) => {
 // API Routes
 app.use('/api/tables', tableRoutes);
 app.use('/api/reservations', reservationRoutes);
-app.use('/api', restaurantInfoRoutes); // Mount restaurant info under /api
+app.use('/api', restaurantInfoRoutes); 
 app.use('/api', reservationStatusRoutes);
 
 app.use('/auth', authRoutes);
