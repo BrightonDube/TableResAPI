@@ -22,7 +22,7 @@ const viewReservationsRoutes = require('./routes/viewReservations');
 const viewUsersRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboard');
 const restaurantInfoRoutes = require('./routes/restaurantInfo');
-const reservationStatusRoutes = require('./routes/reservationStatus'); 
+const reservationStatusRoutes = require('./routes/reservationStatus');
 const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
@@ -71,15 +71,15 @@ app.use((req, res, next) => {
 // API Routes
 app.use('/api/tables', tableRoutes);
 app.use('/api/reservations', reservationRoutes);
-app.use('/api', restaurantInfoRoutes); 
+app.use('/api', restaurantInfoRoutes);
 app.use('/api', reservationStatusRoutes);
+app.use('/api', viewUsersRoutes);
 
 app.use('/auth', authRoutes);
 
 // View Routes
 app.use('/tables', viewTablesRoutes);
 app.use('/reservations', viewReservationsRoutes);
-app.use('/users', viewUsersRoutes);
 
 // Home
 app.get('/', (req, res) => {
