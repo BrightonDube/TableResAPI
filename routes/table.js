@@ -9,9 +9,9 @@ const { verifyToken } = require('../middleware/authMiddleware');
 
 router.post('/', verifyToken, validateTableInput, tableController.createTable);
 
-router.get('/', verifyToken, tableController.getAllTables);
+router.get('/', tableController.getAllTables);
 
-router.get('/:tableId', verifyToken, tableController.getTableById);
+router.get('/:tableId', tableController.getTableById);
 
 router.put(
   '/:tableId',

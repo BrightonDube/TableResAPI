@@ -14,11 +14,10 @@ router.post(
   reservationController.createReservation
 );
 
-router.get('/', verifyToken, reservationController.getAllReservations);
+router.get('/', reservationController.getAllReservations);
 
 router.get(
   '/:reservationId',
-  verifyToken,
   reservationController.getReservationById
 );
 
