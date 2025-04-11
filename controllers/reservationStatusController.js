@@ -119,13 +119,11 @@ exports.deleteReservationStatus = async (req, res, next) => {
       return next(error);
     }
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Reservation status deleted successfully',
-        deletedStatus: status,
-      });
+    res.status(200).json({
+      success: true,
+      message: 'Reservation status deleted successfully',
+      deletedStatus: status,
+    });
   } catch (error) {
     console.error('Error deleting reservation status:', error);
     if (error.name === 'CastError' && error.kind === 'ObjectId') {

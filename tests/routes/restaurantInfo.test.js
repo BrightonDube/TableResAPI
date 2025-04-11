@@ -1,132 +1,67 @@
-const reservationController = require('../../controllers/reservationController');
-const Reservation = require('../../models/Reservation');
-const Table = require('../../models/Table');
+const reservationStatusController = require('../../controllers/reservationStatusController');
+const ReservationStatus = require('../../models/ReservationStatus');
 
-jest.mock('../../models/Reservation');
-jest.mock('../../models/Table');
+jest.mock('../../models/ReservationStatus');
 
-describe('reservationController', () => {
-  const mockResponse = () => {
-    const res = {};
-    res.status = jest.fn().mockReturnValue(res);
-    res.json = jest.fn().mockReturnValue(res);
-    return res;
-  };
+describe('reservationStatusController', () => {
+  // Mock response object
+  const mockResponse = () => ({
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  });
 
-  describe('getAllReservations', () => {
-    it('should return paginated reservations with metadata', async () => {
-      const req = {
-        query: {
-          page: '1',
-          limit: '10',
-        },
-      };
+  // Mock next function
+  const mockNext = jest.fn();
+
+  describe('getAllReservationStatuses', () => {
+    it('should return all statuses sorted by name', async () => {
+      const req = {};
       const res = mockResponse();
-
-      const mockReservations = [
-        { _id: '1', name: 'Reservation 1' },
-        { _id: '2', name: 'Reservation 2' }
+      const mockStatuses = [
+        { _id: '1', name: 'Confirmed' },
+        { _id: '2', name: 'Pending' }
       ];
-      
+
+      // Mock the chainable Mongoose methods
       const mockQuery = {
-        sort: jest.fn().mockReturnThis(),
-        skip: jest.fn().mockReturnThis(),
-        limit: jest.fn().mockResolvedValue(mockReservations),
+        sort: jest.fn().mockResolvedValue(mockStatuses),
       };
-      
-      Reservation.find.mockReturnValue(mockQuery);
-      Reservation.countDocuments.mockResolvedValue(15);
+      ReservationStatus.find.mockReturnValue(mockQuery);
 
-      await reservationController.getAllReservations(req, res);
+      await reservationStatusController.getAllReservationStatuses(req, res, mockNext);
 
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: true,
-          message: 'Reservations retrieved successfully',
-          data: mockReservations,
-        })
-      );
-    });
-
-    it('should return 500 error when database fails', async () => {
-      const req = {
-        query: {
-          page: '1',
-          limit: '10',
-        },
-      };
-      const res = mockResponse();
-
-      Reservation.find.mockImplementation(() => {
-        throw new Error('Database error');
+      expect(ReservationStatus.find).toHaveBeenCalled();
+      expect(mockQuery.sort).toHaveBeenCalledWith({ name: 1 });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        count: 2,
+        statuses: mockStatuses
       });
-
-      await reservationController.getAllReservations(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: false,
-          message: 'Database error'
-        })
-      );
     });
   });
 
-  describe('getReservationById', () => {
-    it('should return 400 for invalid ID format', async () => {
+  describe('getReservationStatusById', () => {
+    it('should return a status when found', async () => {
       const req = {
-        params: { reservationId: 'invalid-id' }
+        params: { statusId: '507f1f77bcf86cd799439011' } // Valid ObjectId
       };
       const res = mockResponse();
-
-      await reservationController.getReservationById(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: false,
-          message: 'Invalid reservation ID format'
-        })
-      );
-    });
-
-    it('should return 404 when reservation not found', async () => {
-      const req = {
-        params: { reservationId: '507f1f77bcf86cd799439011' }
+      const mockStatus = { 
+        _id: '507f1f77bcf86cd799439011', 
+        name: 'Confirmed' 
       };
-      const res = mockResponse();
 
-      Reservation.findById.mockResolvedValue(null);
+      ReservationStatus.findById.mockResolvedValue(mockStatus);
 
-      await reservationController.getReservationById(req, res);
+      await reservationStatusController.getReservationStatusById(req, res, mockNext);
 
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: false,
-          message: 'Reservation not found'
-        })
-      );
-    });
-
-    it('should return 500 when database fails', async () => {
-      const req = {
-        params: { reservationId: '507f1f77bcf86cd799439011' }
-      };
-      const res = mockResponse();
-
-      Reservation.findById.mockRejectedValue(new Error('Database error'));
-
-      await reservationController.getReservationById(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: false,
-          message: 'Database error'
-        })
-      );
+      expect(ReservationStatus.findById).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        status: mockStatus
+      });
     });
   });
 });
