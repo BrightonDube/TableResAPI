@@ -1,4 +1,3 @@
-// controllers/userController.js
 const User = require('../models/User');
 const validationMiddleware = require('../middleware/dataValidationMiddleware');
 const errorHandler = require('../middleware/errorHandler');
@@ -38,8 +37,9 @@ exports.getUserById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      res.status(404);
-      next(new Error('User not found'));
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      return next(error);
     }
     res
       .status(200)
