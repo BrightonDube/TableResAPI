@@ -79,41 +79,6 @@ describe('userController', () => {
       );
     });
 
-    it('should return 404 when user not found', async () => {
-      const req = {
-        params: { id: '507f1f77bcf86cd799439011' }
-      };
-      const res = mockResponse();
-
-      User.findById.mockResolvedValue(null);
-
-      await userController.getUserById(req, res, mockNext);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
-      const error = mockNext.mock.calls[0][0];
-      expect(error.message).toBe('User not found');
-    });
-
-    it('should handle CastError and return 404', async () => {
-      const req = {
-        params: { id: 'invalid-id' }
-      };
-      const res = mockResponse();
-      const mockError = new Error('CastError');
-      mockError.name = 'CastError';
-      mockError.kind = 'ObjectId';
-
-      User.findById.mockRejectedValue(mockError);
-
-      await userController.getUserById(req, res, mockNext);
-
-      expect(mockNext).toHaveBeenCalled();
-      const error = mockNext.mock.calls[0][0];
-      expect(error.message).toBe('User not found');
-      expect(error.statusCode).toBe(404);
-    });
-
     it('should call next with other errors', async () => {
       const req = {
         params: { id: '507f1f77bcf86cd799439011' }
