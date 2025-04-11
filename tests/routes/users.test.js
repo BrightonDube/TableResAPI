@@ -1,50 +1,131 @@
 const userController = require('../../controllers/userController');
-const User = require('../../models/User'); // Adjust path
-const ErrorResponse = require('../../utils/errorResponse'); // Adjust path if you have it
+const User = require('../../models/User');
 
-jest.mock('../../models/User'); // Mock the User model
+jest.mock('../../models/User');
 
 describe('userController', () => {
+  // Mock response object
+  const mockResponse = () => {
+    const res = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+  };
+
+  // Mock next function
+  const mockNext = jest.fn();
+
+  describe('getAllUsers', () => {
+    it('should return all users with success response', async () => {
+      const req = {};
+      const res = mockResponse();
+      const mockUsers = [
+        { _id: '1', name: 'User 1', email: 'user1@test.com' },
+        { _id: '2', name: 'User 2', email: 'user2@test.com' }
+      ];
+
+      User.find.mockResolvedValue(mockUsers);
+
+      await userController.getAllUsers(req, res, mockNext);
+
+      expect(User.find).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: true,
+          message: 'Users fetched successfully',
+          data: mockUsers
+        })
+      );
+    });
+
+    it('should call next with error when database fails', async () => {
+      const req = {};
+      const res = mockResponse();
+      const mockError = new Error('Database error');
+
+      User.find.mockRejectedValue(mockError);
+
+      await userController.getAllUsers(req, res, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith(mockError);
+    });
+  });
+
   describe('getUserById', () => {
-    it('should return status 200 if user is found', async () => {
-      const mockReq = { params: { userId: 'someUserId' } };
-      const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() }; // Keep json for now if you use it
-      const mockNext = jest.fn();
-      const testUser = { _id: 'someUserId', name: 'Test User' };
+    it('should return user when found', async () => {
+      const req = {
+        params: { id: '507f1f77bcf86cd799439011' } // Valid ObjectId
+      };
+      const res = mockResponse();
+      const mockUser = { 
+        _id: '507f1f77bcf86cd799439011', 
+        name: 'Test User', 
+        email: 'test@user.com' 
+      };
 
-      User.findById.mockResolvedValue(testUser); // Mock successful findById
+      User.findById.mockResolvedValue(mockUser);
 
-      await userController.getUserById(mockReq, mockRes, mockNext);
+      await userController.getUserById(req, res, mockNext);
 
-      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(User.findById).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: true,
+          message: 'User fetched successfully',
+          data: mockUser
+        })
+      );
     });
 
-    it('should return status 404 if user is not found', async () => {
-      const mockReq = { params: { userId: 'someUserId' } };
-      const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-      const mockNext = jest.fn();
+    it('should return 404 when user not found', async () => {
+      const req = {
+        params: { id: '507f1f77bcf86cd799439011' }
+      };
+      const res = mockResponse();
 
-      User.findById.mockResolvedValue(null); // Mock user not found
+      User.findById.mockResolvedValue(null);
 
-      await userController.getUserById(mockReq, mockRes, mockNext);
+      await userController.getUserById(req, res, mockNext);
 
-      expect(mockRes.status).toHaveBeenCalledWith(404); // Or whatever status you return for not found
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
+      const error = mockNext.mock.calls[0][0];
+      expect(error.message).toBe('User not found');
     });
 
-     it('should return status 400 if userId is invalid (optional, if you handle invalid IDs)', async () => {
-      const mockReq = { params: { userId: 'invalid-id' } };
-      const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-      const mockNext = jest.fn();
+    it('should handle CastError and return 404', async () => {
+      const req = {
+        params: { id: 'invalid-id' }
+      };
+      const res = mockResponse();
+      const mockError = new Error('CastError');
+      mockError.name = 'CastError';
+      mockError.kind = 'ObjectId';
 
-      // If your controller checks for invalid ObjectIds and throws an error or calls next with an error, mock that behavior
-      // For this simple status test, we can just assume findById would return null or error for an invalid ID if no explicit check
-      User.findById.mockResolvedValue(null); // Mock as not found for simplicity in this example
+      User.findById.mockRejectedValue(mockError);
 
-      await userController.getUserById(mockReq, mockRes, mockNext);
+      await userController.getUserById(req, res, mockNext);
 
-      // If you explicitly handle invalid IDs and return 400, then expect 400 here
-      // If you treat invalid IDs as "not found" and return 404, expect 404 here
-      expect(mockRes.status).toHaveBeenCalledWith(404); // or 400 depending on your logic
+      expect(mockNext).toHaveBeenCalled();
+      const error = mockNext.mock.calls[0][0];
+      expect(error.message).toBe('User not found');
+      expect(error.statusCode).toBe(404);
+    });
+
+    it('should call next with other errors', async () => {
+      const req = {
+        params: { id: '507f1f77bcf86cd799439011' }
+      };
+      const res = mockResponse();
+      const mockError = new Error('Some other error');
+
+      User.findById.mockRejectedValue(mockError);
+
+      await userController.getUserById(req, res, mockNext);
+
+      expect(mockNext).toHaveBeenCalledWith(mockError);
     });
   });
 });

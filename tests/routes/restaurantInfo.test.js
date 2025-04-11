@@ -1,58 +1,132 @@
-const restaurantInfoController = require('../../controllers/restaurantInfoController'); // Adjust path
-const RestaurantInfo = require('../../models/RestaurantInfo'); // Adjust path
+const reservationController = require('../../controllers/reservationController');
+const Reservation = require('../../models/Reservation');
+const Table = require('../../models/Table');
 
-jest.mock('../../models/RestaurantInfo'); // Mock the RestaurantInfo model
+jest.mock('../../models/Reservation');
+jest.mock('../../models/Table');
 
-describe('restaurantInfoController', () => {
-  describe('getRestaurantInfo', () => {
-    it('should return status 200 on successful retrieval', async () => {
-      const mockReq = {}; // Empty request object for GET - restaurant info likely doesn't need params
-      const mockRes = {
-        status: jest.fn().mockReturnThis(), // Mock res.status() - chainable
-        json: jest.fn(),                   // Mock res.json() - if you use it to send data
-        // send: jest.fn(),                // Mock res.send() - if you use it
+describe('reservationController', () => {
+  const mockResponse = () => {
+    const res = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+  };
+
+  describe('getAllReservations', () => {
+    it('should return paginated reservations with metadata', async () => {
+      const req = {
+        query: {
+          page: '1',
+          limit: '10',
+        },
       };
-      const mockNext = jest.fn();
+      const res = mockResponse();
 
-      // Mock successful database query - simulate finding restaurant info
-      const mockRestaurantData = {
-        name: 'Test Restaurant',
-        address: '123 Main St',
-        // ... other restaurant info properties
+      const mockReservations = [
+        { _id: '1', name: 'Reservation 1' },
+        { _id: '2', name: 'Reservation 2' }
+      ];
+      
+      const mockQuery = {
+        sort: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockResolvedValue(mockReservations),
       };
-      RestaurantInfo.findOne.mockResolvedValue(mockRestaurantData); // Mock findOne to resolve with data
+      
+      Reservation.find.mockReturnValue(mockQuery);
+      Reservation.countDocuments.mockResolvedValue(15);
 
-      await restaurantInfoController.getRestaurantInfo(mockReq, mockRes, mockNext);
+      await reservationController.getAllReservations(req, res);
 
-      expect(RestaurantInfo.findOne).toHaveBeenCalled(); // Verify findOne was called (optional, but good to check)
-      expect(mockRes.status).toHaveBeenCalledWith(200);   // Assert status code 200
-      // If you send JSON data in the response, you can also assert on res.json() here:
-      // expect(mockRes.json).toHaveBeenCalledWith({ success: true, data: mockRestaurantData });
-      expect(mockNext).not.toHaveBeenCalled(); // Ensure next is not called for success
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: true,
+          message: 'Reservations retrieved successfully',
+          data: mockReservations,
+        })
+      );
     });
 
-    it('should handle errors and call next if retrieval fails (e.g., DB error)', async () => {
-      const mockReq = {};
-      const mockRes = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-        // send: jest.fn(),
+    it('should return 500 error when database fails', async () => {
+      const req = {
+        query: {
+          page: '1',
+          limit: '10',
+        },
       };
-      const mockNext = jest.fn();
+      const res = mockResponse();
 
-      const dbError = new Error('Database error fetching restaurant info');
-      RestaurantInfo.findOne.mockRejectedValue(dbError); // Mock findOne to reject with an error
+      Reservation.find.mockImplementation(() => {
+        throw new Error('Database error');
+      });
 
-      await restaurantInfoController.getRestaurantInfo(mockReq, mockRes, mockNext);
+      await reservationController.getAllReservations(req, res);
 
-      expect(RestaurantInfo.findOne).toHaveBeenCalled(); // Verify findOne was called
-      expect(mockRes.status).not.toHaveBeenCalled();     // status should not be called directly in error case if using error handler
-      expect(mockRes.json).not.toHaveBeenCalled();       // json should not be called directly in error case
-      expect(mockNext).toHaveBeenCalledWith(dbError);    // Assert that next is called with the error
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          message: 'Database error'
+        })
+      );
+    });
+  });
+
+  describe('getReservationById', () => {
+    it('should return 400 for invalid ID format', async () => {
+      const req = {
+        params: { reservationId: 'invalid-id' }
+      };
+      const res = mockResponse();
+
+      await reservationController.getReservationById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          message: 'Invalid reservation ID format'
+        })
+      );
     });
 
-    // You can add more test cases:
-    // - What if no restaurant info is found? (Should it be 404 or 200 with empty data, depends on your API design)
-    // - What if there are validation errors in the controller logic (though less likely for a GET restaurant info endpoint)
+    it('should return 404 when reservation not found', async () => {
+      const req = {
+        params: { reservationId: '507f1f77bcf86cd799439011' }
+      };
+      const res = mockResponse();
+
+      Reservation.findById.mockResolvedValue(null);
+
+      await reservationController.getReservationById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          message: 'Reservation not found'
+        })
+      );
+    });
+
+    it('should return 500 when database fails', async () => {
+      const req = {
+        params: { reservationId: '507f1f77bcf86cd799439011' }
+      };
+      const res = mockResponse();
+
+      Reservation.findById.mockRejectedValue(new Error('Database error'));
+
+      await reservationController.getReservationById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          message: 'Database error'
+        })
+      );
+    });
   });
 });
