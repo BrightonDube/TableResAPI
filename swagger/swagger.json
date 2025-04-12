@@ -124,6 +124,11 @@
             "description": "Phone number of the customer (optional)",
             "example": "123-456-7890"
           },
+          "customerEmail": {
+            "type": "string",
+            "description": "Email Address of the customer (optional)",
+            "example": "info@restaurant.com"
+          },
           "reservationTime": {
             "type": "string",
             "format": "date-time",
@@ -673,6 +678,7 @@
                   "partySize": 2,
                   "status": "Pending",
                   "customerPhone": "987-654-3210",
+                  "customerEmail": "info@restaurant.com",
                   "notes": "Anniversary dinner"
                 }
               }

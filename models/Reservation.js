@@ -18,6 +18,11 @@ const reservationSchema = new mongoose.Schema(
       trim: true, 
       maxlength: 20, 
     },
+    customerEmail: {
+      type: String,
+      trim: true, 
+      maxlength: 20, 
+    },
     reservationTime: {
       type: Date, 
       required: true,
