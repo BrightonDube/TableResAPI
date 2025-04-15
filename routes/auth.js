@@ -16,7 +16,8 @@ router.get('/status', (req, res) => {
       isAuthenticated: true,
       user: {
         email: req.user.email,
-        // Add other user properties you want to expose
+        name: req.user.name,
+        picture: req.user.picture,
       },
     });
   } else {
