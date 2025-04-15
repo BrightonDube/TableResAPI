@@ -8,6 +8,9 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger/swagger.json');
 const errorHandler = require('./middleware/errorHandler');
 const MongoStore = require('connect-mongo');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 // Models
 const Table = require('./models/Table');
@@ -37,6 +40,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+  })
+);
+
+app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -55,6 +65,21 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(expressLayouts);
+
+// Security middleware
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Enable if needed
+  })
+);
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+// Apply to all routes
+app.use('/api/', limiter);
 
 // EJS
 app.set('view engine', 'ejs');
@@ -100,8 +125,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Error Handler
 app.use(errorHandler);
 
-module.exports = app;
-
 // Server startup (won't execute during tests)
 module.exports = app;
 
@@ -112,10 +135,17 @@ if (require.main === module) {
     console.log(`Server running on port ${port}`);
   });
 
-  // Handle cleanup
-  process.on('SIGTERM', () => {
-    server.close(() => {
-      console.log('Server closed');
+  // Enhanced cleanup
+  const shutdown = async () => {
+    console.log('Shutting down gracefully...');
+    await new Promise((resolve) => {
+      server.close(resolve);
     });
-  });
+    await mongoose.connection.close();
+    console.log('Server and database connections closed');
+    process.exit(0);
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
