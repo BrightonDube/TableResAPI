@@ -15,9 +15,9 @@ exports.googleCallback = (req, res, next) => {
   passport.authenticate('google', {
     failureRedirect: '/login',
   })(req, res, () => {
-    // Retrieve the original URL from the session
+    
     const redirectUrl = req.session.returnTo || '/';
-    delete req.session.returnTo; // Clean up the session
+    delete req.session.returnTo; 
     res.redirect(redirectUrl);
   });
 };
@@ -27,6 +27,6 @@ exports.logout = (req, res, next) => {
     if (err) {
       return next(err);
     }
-    res.redirect('/');
+    res.redirect(redirectUrl);
   });
 };
