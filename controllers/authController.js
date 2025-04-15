@@ -3,8 +3,8 @@ const passport = require('../config/passport');
 
 exports.googleAuth = (req, res, next) => {
   const frontendBaseUrl =
-    process.env.FRONTEND_BASE_URL || 'http://localhost:3000'; // Use environment variable for flexibility
-  req.session.returnTo = req.headers.referer || `${frontendBaseUrl}/dashboard`;
+    process.env.FRONTEND_URL || 'http://127.0.0.1:5500/table_whisperer'; 
+  req.session.returnTo = req.headers.referer || `${frontendBaseUrl}/dashboard.html`;
   passport.authenticate('google', { scope: ['profile', 'email'] })(
     req,
     res,
@@ -13,26 +13,30 @@ exports.googleAuth = (req, res, next) => {
 };
 
 exports.googleCallback = (req, res, next) => {
+    const frontendBaseUrl =
+    process.env.FRONTEND_URL || 'http://127.0.0.1:5500/table_whisperer';  
   passport.authenticate('google', {
-    failureRedirect: '/login',
+    failureRedirect: `${frontendBaseUrl}/#`,
   })(req, res, (err) => {
     if (err) {
       console.error('Google authentication error:', err); // Log the error for debugging
-      return res.redirect('/login'); // Redirect to login on error
+      return res.redirect(`${frontendBaseUrl}/#`); // Redirect to login on error
     }
 
-    const redirectUrl = req.session.returnTo || '/';
+    const redirectUrl = req.session.returnTo || 'http://127.0.0.1:5500/table_whisperer';
     delete req.session.returnTo;
     res.redirect(redirectUrl);
   });
 };
 
 exports.logout = (req, res, next) => {
+    const frontendBaseUrl =
+    process.env.FRONTEND_URL || 'http://127.0.0.1:5500/table_whisperer';  
   req.logout(function (err) {
     if (err) {
       return next(err);
     }
-    const redirectUrl = req.query.redirect || '/'; // Default to homepage if no redirect is provided
+    const redirectUrl = req.query.redirect || `${frontendBaseUrl}/#`; // Default to homepage if no redirect is provided
     res.redirect(redirectUrl);
   });
 };
