@@ -9,4 +9,22 @@ router.get('/google/callback', authController.googleCallback);
 
 router.get('/logout', authController.logout);
 
+// Add this new route for checking authentication status
+router.get('/status', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({
+      isAuthenticated: true,
+      user: {
+        email: req.user.email,
+        // Add other user properties you want to expose
+      },
+    });
+  } else {
+    res.json({
+      isAuthenticated: false,
+      user: null,
+    });
+  }
+});
+
 module.exports = router;
